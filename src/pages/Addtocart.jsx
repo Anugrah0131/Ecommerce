@@ -8,7 +8,7 @@ function Addtocart() {
 
   const upload = async () => {
     try {
-      const res = await fetch("http://localhost:8080/user", {
+      const res = await fetch("http://localhost:5173/user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json", // ✅ Fixed header

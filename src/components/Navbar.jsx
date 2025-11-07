@@ -24,7 +24,7 @@ function Navbar() {
           Home
         </Link>
         <Link
-          to="/products"
+          to="/Products"
           className="hover:text-gray-200 transition duration-200"
         >
           Products

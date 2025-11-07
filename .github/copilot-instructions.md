@@ -1,12 +1,27 @@
-<!-- .github/copilot-instructions.md -->
-# Copilot / AI agent instructions — Ecommerce (React + Vite)
+# Copilot / AI Agent Instructions — Ecommerce (React + Vite)
 
-Purpose: give an AI coding agent the minimal, concrete knowledge to be productive in this repo.
+Purpose: Provide AI coding agents with essential knowledge for immediate productivity in this repo.
 
-- Entry points & scripts
-  - Main entry: `src/main.jsx` (router + routes). Prefer editing routes here rather than the broken `src/App.jsx`.
-  - Dev/build/preview: see `package.json` scripts: `npm run dev` (vite), `npm run build`, `npm run preview`, `npm run lint`.
-  - Vite config: `vite.config.js` (plugins: `@vitejs/plugin-react`, `@tailwindcss/vite`).
+## Quick Start
+```bash
+npm install    # Install dependencies
+npm run dev    # Start dev server (http://localhost:5173)
+npm run build  # Production build
+npm run lint   # Run ESLint checks
+```
+
+## Core Architecture
+- Entry: `src/main.jsx` - React Router v7 setup
+  ```jsx
+  // src/main.jsx pattern
+  <BrowserRouter>
+    <Routes>
+      <Route path='/' element={<Home />} />
+      <Route path='/products' element={<Products />} />
+    </Routes>
+  </BrowserRouter>
+  ```
+- Build: Vite (`vite.config.js`) with `@vitejs/plugin-react` + `@tailwindcss/vite`
 
 - Architecture / big picture
   - Small single-page React app using Vite as bundler and TailwindCSS for styling.
@@ -19,25 +34,71 @@ Purpose: give an AI coding agent the minimal, concrete knowledge to be productiv
   - Default exports: components/pages use `export default`. New components should follow the same pattern.
   - Icons: `lucide-react` is used for icons (`Navbar.jsx`, `Home.jsx`).
 
-- Integration points & external deps
-  - External API: `https://fakestoreapi.com/products` (used by `Products.jsx`). Expect JSON array of products.
-  - Images are mostly remote URLs (Unsplash, fakestoreapi). Consider caching or moving static assets into `src/assets/` if needed.
+## Data Flow & Integration
+- Products data flow:
+  ```jsx
+  // src/components/Products.jsx pattern
+  function Products() {
+    const [products, setProducts] = useState([]);
+    useEffect(() => {
+      fetch("https://fakestoreapi.com/products")
+        .then((res) => res.json())
+        .then((data) => setProducts(data));
+    }, []);
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        {products.map(product => <ProductCard key={product.id} {...product} />)}
+      </div>
+    );
+  }
+  ```
+- External API: `https://fakestoreapi.com/products` returns:
+  ```typescript
+  type Product = {
+    id: number;
+    title: string;
+    price: number;
+    image: string;
+    // ... other fields
+  }
+  ```
+- Images: Remote URLs (Unsplash, fakestoreapi). Put static assets in `src/assets/`.
 
-- Known issues & gotchas (important for agents)
+## Known Issues & Gotchas (Important!)
   - `src/App.jsx` currently contains a broken import (`Cart from `) and is syntactically invalid — do not base changes off this file. The router in `src/main.jsx` is the canonical routing setup.
   - `src/main.jsx` imports `Products` from `./pages/Products` but an implementation currently exists at `src/components/Products.jsx`. Inspect and resolve duplicates before refactoring.
   - Route path casing is inconsistent: `/Cart` vs `/cart` — normalize to lowercase paths to avoid confusion and platform-specific issues. Note: Windows filesystem is case-insensitive, but CI (Linux) may be case-sensitive.
   - There is no TypeScript or global type enforcement; repo has some `@types/*` dev deps but source is JavaScript. Prefer small, safe changes.
 
-- How to add a new page or component (concrete example)
-  1. Create `src/pages/NewPage.jsx` exporting default functional component.
-  2. Add route in `src/main.jsx`: `<Route path='/new' element={<NewPage/>} />`.
-  3. Add a link in `src/components/Navbar.jsx` (keep consistent classnames and responsive behavior).
+## Common Development Tasks
 
-- Linting & quality
-  - Run `npm run lint` to check ESLint (configuration is minimal). Fix only relevant JS/React rules; avoid reformatting unrelated files.
+### Adding a New Feature Page
+1. Create page component:
+```jsx
+// src/pages/NewFeature.jsx
+export default function NewFeature() {
+  return (
+    <div className="py-10 px-6 max-w-6xl mx-auto">
+      <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+        New Feature
+      </h2>
+      {/* Follow spacing/layout from Home.jsx */}
+    </div>
+  );
+}
+```
 
-- Small testing checklist for PRs
+2. Add route in `src/main.jsx`:
+```jsx
+<Route path='/new-feature' element={<NewFeature />} />
+```
+
+3. Add nav link in `src/components/Navbar.jsx`:
+```jsx
+<li className="hover:text-gray-200 cursor-pointer">New Feature</li>
+```
+
+### Quality & Testing
   - Start dev server: `npm run dev` and confirm main pages load (Home, Products, Cart route).
   - Verify `Products` fetch succeeds (network call to fakestoreapi). If flaky, stub or mock during automated tests.
   - Confirm no import path errors (fix incorrect paths or duplicate files first).

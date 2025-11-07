@@ -1,4 +1,3 @@
-// src/pages/Details.jsx
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -7,9 +6,13 @@ function Details() {
   const { id } = useParams();
 
   const getData = async () => {
-    const res = await fetch("http://localhost:8080/user");
-    const data = await res.json();
-    setProduct(data);
+    try {
+      const res = await fetch(`http://localhost:8080/api/products/${id}`);
+      const data = await res.json();
+      setProduct(data);
+    } catch (err) {
+      console.error("Error fetching product:", err);
+    }
   };
 
   useEffect(() => {
@@ -27,7 +30,7 @@ function Details() {
         />
         <h2 className="text-xl font-semibold mb-2">{product.title}</h2>
         <p className="text-gray-600 mb-4">{product.description}</p>
-        <p className="text-lg font-bold text-green-600">${product.price}</p>
+        <p className="text-lg font-bold text-green-600">₹ {product.price}</p>
       </div>
     </div>
   );

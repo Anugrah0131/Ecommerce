@@ -3,42 +3,65 @@ import Navbar from "../components/Navbar";
 import Card from "./Card";
 
 function Products() {
-  const [products, setProducts] = useState([])
+  const [products, setProducts] = useState([]);
 
   const fetchStoreProducts = async () => {
     try {
-      const res = await fetch("http://localhost:8080/user");
+      const res = await fetch("http://localhost:8080/api/products");
       const data = await res.json();
-      console.log("Fake store data:", data)
+      console.log("Fetched products:", data);
       setProducts(data);
     } catch (error) {
-      console.error("Error fetching prducts:", error);
+      console.error("Error fetching products:", error);
     }
-};
-    useEffect(()=>{
-      fetchStoreProducts();
+  };
 
-    },[]);
+  const deleteProduct = async (id) => {
+    try {
+      const res = await fetch(`http://localhost:8080/api/products/${id}`, {
+        method: "DELETE",
+      });
 
-    return (
-      <div className="w-full min-h-screen bg-grey-100">
-         <div className="w-full h-[12vh]">
-          <Navbar/>
-         </div>
+      if (res.ok) {
+        setProducts((prev) => prev.filter((item) => item._id !== id));
+        console.log("Product deleted:", id);
+      } else {
+        console.error("Failed to delete product:", id);
+      }
+    } catch (error) {
+      console.error("Error deleting product:", error);
+    }
+  };
 
-         <div className="flex flex-wrap justify-center gap-6 p-6">
-            {products.map((item)=>(
-              <Card
-              key={item.id}
-              id={item.id}
+  useEffect(() => {
+    fetchStoreProducts();
+  }, []);
+
+  return (
+    <div className="w-full min-h-screen bg-gray-100">
+      <div className="w-full h-[12vh]">
+        <Navbar />
+      </div>
+
+      <div className="flex flex-wrap justify-center gap-6 p-6">
+        {products.length === 0 ? (
+          <p className="text-gray-500 text-center mt-10">No products found</p>
+        ) : (
+          products.map((item) => (
+            <Card
+              key={item._id}
+              id={item._id}
               title={item.title}
               price={item.price}
-              Image={item.image} />
-              
-              ))}
-         </div>
+              image={item.image}
+              onDelete={deleteProduct}
+            />
+          ))
+        )}
       </div>
-    )
-
+    </div>
+  );
 }
+
 export default Products;
+
