@@ -43,7 +43,7 @@ function SingleCategory() {
                 className="w-full h-40 object-cover rounded-md"
               />
               <h3 className="mt-2 font-semibold">{p.title}</h3>
-              <p className="text-gray-600">₹{p.price}</p>
+              <p className="text-gray-650">₹{p.price}</p>
             </div>
           ))}
         </div>
