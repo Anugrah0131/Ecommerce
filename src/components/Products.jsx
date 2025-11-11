@@ -54,6 +54,7 @@ function Products() {
               title={item.title}
               price={item.price}
               image={item.image}
+              category={item?.category?.name??"Uncategorized"}
               onDelete={deleteProduct}
             />
           ))

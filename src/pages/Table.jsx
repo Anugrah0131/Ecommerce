@@ -3,18 +3,36 @@ import { TiDelete } from "react-icons/ti";
 
 function Table() {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   const [form, setForm] = useState({
     title: "",
     price: "",
     image: "",
+    category: "",
   });
-  const [loading, setLoading] = useState(false);
 
   const API_URL = "http://localhost:8080/api/products";
+  const CATEGORY_URL = "http://localhost:8080/api/categories";
 
+  // ✅ Fetch Categories
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch(CATEGORY_URL);
+      if (!res.ok) throw new Error("Failed to fetch categories");
+      const data = await res.json();
+      setCategories(data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  // ✅ Fetch Products
   const fetchProducts = async () => {
     try {
       const res = await fetch(API_URL);
+      if (!res.ok) throw new Error("Failed to fetch products");
       const data = await res.json();
       setProducts(data);
     } catch (error) {
@@ -23,17 +41,20 @@ function Table() {
   };
 
   useEffect(() => {
+    fetchCategories();
     fetchProducts();
   }, []);
 
+  // ✅ Handle Form Inputs
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // ✅ Add Product
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.title || !form.price || !form.image) {
+    if (!form.title || !form.price || !form.image || !form.category) {
       alert("Please fill all fields");
       return;
     }
@@ -51,30 +72,27 @@ function Table() {
       if (!res.ok) throw new Error("Failed to add product");
 
       const data = await res.json();
-      setProducts([...products, data.product]);
-      setForm({ title: "", price: "", image: "" });
+      setProducts([...products, data.product || data]); // handles both response types
+      setForm({ title: "", price: "", image: "", category: "" });
     } catch (error) {
       console.error("Error adding product:", error);
       alert("Error adding product");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
+  // ✅ Delete Product
   const deleteProduct = async (id) => {
     const confirmDelete = window.confirm("Are you sure you want to delete?");
     if (!confirmDelete) return;
 
     try {
-      const res = await fetch(`${API_URL}/${id}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed to delete product");
 
-      if (res.ok) {
-        setProducts(products.filter((p) => p._id !== id));
-        alert("Product deleted successfully");
-      } else {
-        alert("Failed to delete product");
-      }
+      setProducts(products.filter((p) => p._id !== id));
+      alert("Product deleted successfully");
     } catch (error) {
       console.error("Error deleting product:", error);
       alert("Error deleting product");
@@ -87,15 +105,16 @@ function Table() {
         Product Manager
       </h1>
 
-      {/* Form */}
+      {/* ✅ Form Section */}
       <form
         onSubmit={handleSubmit}
-        className="w-[90%] md:w-[70%] lg:w-[60%] bg-white shadow-lg p-6 m-10"
+        className="w-[90%] md:w-[70%] lg:w-[60%] bg-white shadow-lg p-6 m-10 rounded-lg"
       >
         <h2 className="text-2xl font-semibold text-gray-700 mb-4">
           Add New Product
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <input
             type="text"
             name="title"
@@ -120,7 +139,23 @@ function Table() {
             onChange={handleChange}
             className="border rounded-md px-4 py-2 focus:ring-2 focus:ring-indigo-400"
           />
+          <select
+            name="category"
+            value={form.category}
+            onChange={handleChange}
+            className="border rounded-md px-4 py-2 focus:ring-2 focus:ring-indigo-400"
+          >
+            <option value="" disabled>
+              Select Category
+            </option>
+            {categories.map((cat) => (
+              <option key={cat._id} value={cat._id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
         </div>
+
         <button
           type="submit"
           disabled={loading}
@@ -130,7 +165,7 @@ function Table() {
         </button>
       </form>
 
-      {/* Product Table */}
+      {/* ✅ Product Table */}
       <div className="w-[90%] md:w-[70%] bg-white shadow-xl rounded-lg overflow-hidden">
         <table className="w-full border-collapse">
           <thead className="bg-indigo-600 text-white">
@@ -139,6 +174,7 @@ function Table() {
               <th className="px-4 py-3 text-left">Image</th>
               <th className="px-4 py-3 text-left">Name</th>
               <th className="px-4 py-3 text-left">Price</th>
+              <th className="px-4 py-3 text-left">Category</th>
               <th className="px-4 py-3 text-center">Action</th>
             </tr>
           </thead>
@@ -163,6 +199,9 @@ function Table() {
                   <td className="px-4 py-3 font-medium text-green-600 text-left">
                     ₹ {item.price}
                   </td>
+                  <td className="px-4 py-3 text-gray-700 text-left">
+                    {item.category?.name || "N/A"}
+                  </td>
                   <td className="px-4 py-3 text-center">
                     <button
                       onClick={() => deleteProduct(item._id)}
@@ -177,7 +216,7 @@ function Table() {
             ) : (
               <tr>
                 <td
-                  colSpan="5"
+                  colSpan="6"
                   className="text-center py-6 text-gray-500 font-medium"
                 >
                   No Products Found
@@ -192,4 +231,3 @@ function Table() {
 }
 
 export default Table;
-

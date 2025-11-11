@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-function Card({ id, title, price, Image }) {
+function Card({ id, title, price, image, category, onDelete }) {
     return (
         <div
             key={id}
@@ -11,7 +11,7 @@ function Card({ id, title, price, Image }) {
             <div className="w-full h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
                 {Image ? (
                     <img
-                        src={Image}
+                        src={image}
                         alt={title}
                         className="object-cover w-full h-full"
                     />
@@ -28,9 +28,9 @@ function Card({ id, title, price, Image }) {
                 <p className="text-gray-600 mt-2 text-sm">
                     ₹{price ? price : "N/A"}
                 </p>
-
+                <p>{category}</p>
                 <button className="mt-4 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-all duration-200">
-                   <link rel="" href="" />View
+                   <link rel="" />View
                 </button>
                 <button className="mt-4 px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-all duration-200">
                     Add to cart
