@@ -108,7 +108,7 @@ function Table() {
       {/* ✅ Form Section */}
       <form
         onSubmit={handleSubmit}
-        className="w-[90%] md:w-[70%] lg:w-[60%] bg-white shadow-lg p-6 m-10 rounded-lg"
+        className="w-[90%] md:w-[72%] lg:w-[60%] bg-white shadow-lg p-6 m-10 rounded-lg"
       >
         <h2 className="text-2xl font-semibold text-gray-700 mb-4">
           Add New Product
