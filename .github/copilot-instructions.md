@@ -110,4 +110,4 @@ export default function NewFeature() {
   - `src/pages/Cart.jsx` — current cart UI (static data, where to wire real state).
   - `vite.config.js`, `package.json` — build, plugin and dependency info.
 
-If anything in these notes is unclear or you want more examples (e.g., how to wire a global cart using context or Redux), tell me which area to expand and I'll iterate.
+If anything in these notes is unclear or you want more examples (e.g., how to wire a global cart using context or Redux), tell me which area to expand and I'll iterate. 

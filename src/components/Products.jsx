@@ -1,68 +1,67 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
-import Card from "./Card";
+import Card from "./Card"; // using your card design
+import Navbar from "./Navbar";
 
 function Products() {
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const fetchStoreProducts = async () => {
+  const fetchProducts = async () => {
     try {
       const res = await fetch("http://localhost:8080/api/products");
       const data = await res.json();
-      console.log("Fetched products:", data);
+
       setProducts(data);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching products:", error);
-    }
-  };
-
-  const deleteProduct = async (id) => {
-    try {
-      const res = await fetch(`http://localhost:8080/api/products/${id}`, {
-        method: "DELETE",
-      });
-
-      if (res.ok) {
-        setProducts((prev) => prev.filter((item) => item._id !== id));
-        console.log("Product deleted:", id);
-      } else {
-        console.error("Failed to delete product:", id);
-      }
-    } catch (error) {
-      console.error("Error deleting product:", error);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchStoreProducts();
+    fetchProducts();
   }, []);
 
-  return (
-    <div className="w-full min-h-screen bg-gray-100">
-      <div className="w-full h-[12vh]">
-        <Navbar />
+  if (loading)
+    return (
+      <div className="min-h-screen flex justify-center items-center text-gray-500">
+        Loading products...
       </div>
+    );
 
-      <div className="flex flex-wrap justify-center gap-6 p-6">
+  return (
+    <>
+      
+
+      <div className="min-h-screen bg-gray-50 p-6">
+        <h1 className="text-3xl font-bold text-center mb-8">
+          All Products
+        </h1>
+
         {products.length === 0 ? (
-          <p className="text-gray-500 text-center mt-10">No products found</p>
+          <p className="text-center text-gray-500 text-lg">
+            No products found.
+          </p>
         ) : (
-          products.map((item) => (
-            <Card
-              key={item._id}
-              id={item._id}
-              title={item.title}
-              price={item.price}
-              image={item.image}
-              category={item?.category?.name??"Uncategorized"}
-              onDelete={deleteProduct}
-            />
-          ))
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
+            {products.map((p) => (
+              <Card
+                key={p._id}
+                id={p._id}
+                title={p.title}
+                price={p.price}
+                image={p.image}
+                category={p.category?.name}
+              />
+            ))}
+          </div>
         )}
       </div>
-    </div>
+    </>
   );
 }
 
 export default Products;
+
 
