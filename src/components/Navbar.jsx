@@ -6,59 +6,76 @@ function Navbar() {
   const navigate = useNavigate();
 
   return (
-    <nav className="w-full bg-white text-gray-800 py-4 px-6 shadow-sm flex justify-between items-center sticky top-0 z-50 border-b border-gray-100">
-      
+    <nav className="
+      w-full 
+      bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-600 
+      text-white 
+      px-6 sm:px-10 py-4 
+      shadow-lg 
+      backdrop-blur-md
+      sticky top-0 z-50
+      flex flex-col md:flex-row items-center justify-between gap-4
+    ">
+
       {/* Brand */}
       <Link
         to="/"
-        className="text-2xl font-bold tracking-tight text-blue-600 hover:text-blue-700 transition"
+        className="text-3xl font-extrabold tracking-wide drop-shadow-sm"
       >
-        ShopEase
+        <span className="text-yellow-300">Shop</span>Ease
       </Link>
 
       {/* Search Bar */}
-      <div className="hidden sm:flex items-center w-1/2 max-w-md border border-gray-200 rounded-full overflow-hidden shadow-sm">
+      <div className="
+        flex items-center 
+        w-full md:w-[40%] 
+        bg-white/95 
+        rounded-full 
+        overflow-hidden 
+        shadow-md
+      ">
         <input
           type="text"
-          placeholder="Search products..."
-          className="w-full px-4 py-2 text-gray-700 focus:outline-none"
+          placeholder="Search for products..."
+          className="w-full px-4 py-2 text-gray-800 placeholder-gray-500 focus:outline-none"
         />
         <button className="px-4 bg-blue-600 hover:bg-blue-700 text-white transition">
           <Search size={18} />
         </button>
       </div>
 
-      {/* Navigation Links */}
-      <div className="flex items-center space-x-6">
-        <Link
-          to="/"
-          className="text-gray-700 hover:text-blue-600 font-medium transition"
-        >
+      {/* Links & Buttons */}
+      <div className="flex items-center gap-4 sm:gap-6 text-lg font-medium">
+
+        <Link to="/" className="hover:text-yellow-300 transition-all">
           Home
         </Link>
-        <Link
-          to="/products"
-          className="text-gray-700 hover:text-blue-600 font-medium transition"
-        >
+
+        <Link to="/products" className="hover:text-yellow-300 transition-all">
           Products
         </Link>
-        <Link
-          to="/contact"
-          className="text-gray-700 hover:text-blue-600 font-medium transition"
-        >
+
+        <Link to="/contact" className="hover:text-yellow-300 transition-all">
           Contact
         </Link>
-        <Link
-          to="/about"
-          className="text-gray-700 hover:text-blue-600 font-medium transition"
-        >
+
+        <Link to="/about" className="hover:text-yellow-300 transition-all">
           About
         </Link>
 
         {/* Cart Button */}
         <button
           onClick={() => navigate("/cart")}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full font-medium shadow-sm transition"
+          className="
+            flex items-center gap-2 
+            bg-yellow-400 text-black 
+            hover:bg-yellow-300 
+            px-4 py-2 
+            rounded-full
+            font-semibold 
+            shadow-md 
+            transition
+          "
         >
           <ShoppingCart size={18} /> Cart
         </button>
@@ -66,16 +83,29 @@ function Navbar() {
         {/* Login Button */}
         <button
           onClick={() => navigate("/login")}
-          className="flex items-center gap-2 border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-4 py-2 rounded-full font-medium shadow-sm transition"
+          className="
+            flex items-center gap-2 
+            border border-yellow-300 
+            text-yellow-300 
+            hover:bg-yellow-300 hover:text-black 
+            px-4 py-2 
+            rounded-full
+            font-semibold 
+            shadow-md 
+            transition
+          "
         >
           <LogIn size={18} /> Login
         </button>
+
       </div>
     </nav>
   );
 }
 
 export default Navbar;
+
+
 
 
 

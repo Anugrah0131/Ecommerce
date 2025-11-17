@@ -9,6 +9,7 @@ export default function Home() {
     try {
       const res = await fetch("http://localhost:8080/api/categories");
       const data = await res.json();
+
       if (Array.isArray(data)) setCategories(data);
       else if (Array.isArray(data.categories)) setCategories(data.categories);
       else setCategories([]);
@@ -22,47 +23,89 @@ export default function Home() {
   }, []);
 
   return (
-    <>
-      <div className="min-h-screen bg-gray-50 px-6 py-12 text-gray-810">
-        <h1 className="text-3xl font-bold text-center mb-10 text-blue-600">
+    <div className="w-full min-h-screen flex flex-col bg-gray-50 font-sans">
+
+      {/* 🌈 HERO SECTION (synced layout) */}
+      <section className="flex flex-col md:flex-row justify-between items-center py-16 px-8 md:px-16 bg-gradient-to-r from-blue-50 to-blue-100">
+        <div className="md:w-1/2 space-y-6 text-center md:text-left">
+          <h2 className="text-5xl font-extrabold text-gray-800 leading-snug">
+            Welcome to{" "}
+            <span className="text-blue-600 drop-shadow-lg">Shop Ease</span>
+          </h2>
+          <p className="text-gray-600 text-lg max-w-md mx-auto md:mx-0">
+            Discover high-quality products and exclusive deals — all in one place!
+          </p>
+          <Link
+            to="/Products"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 inline-block"
+          >
+            🛍️ Start Shopping
+          </Link>
+        </div>
+
+        <div className="md:w-1/2 mt-10 md:mt-0 flex justify-center">
+          <img
+            src="https://images.unsplash.com/photo-1606813902913-47c15f43c6b4?auto=format&fit=crop&w=900&q=80"
+            alt="Shopping"
+            className="rounded-xl shadow-2xl w-full md:w-3/4"
+          />
+        </div>
+      </section>
+
+      {/* 🏷 Shop by Category (your actual data) */}
+      <section className="py-16 px-8 md:px-16 bg-white">
+        <h1 className="text-3xl font-bold text-center mb-12 text-blue-600">
           Shop by Category
         </h1>
 
-        {/* Category Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-8 max-w-6xl mx-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-10 max-w-6xl mx-auto">
           {categories.map((cat) => (
             <div
               key={cat._id}
               onClick={() => navigate(`/category/${cat._id}`)}
-              className="cursor-pointer bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-transform transform hover:scale-105"
+              className="cursor-pointer flex flex-col items-center bg-gray-50 border border-gray-200 rounded-xl p-4 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300"
             >
               <img
                 src={cat.image}
                 alt={cat.name}
-                className="w-full h-44 object-cover"
+                className="w-24 h-24 rounded-full object-cover border-2 border-blue-300 mb-3"
               />
-              <div className="p-4 text-center">
-                <h3 className="text-lg font-semibold">{cat.name}</h3>
-              </div>
+              <h3 className="text-lg font-semibold text-gray-700">
+                {cat.name}
+              </h3>
             </div>
           ))}
         </div>
+      </section>
 
-        <div className="text-center mt-16">
-          <h2 className="text-4xl font-bold mb-3 text-gray-800">
-            Discover the Best Deals 🛒
-          </h2>
-          <p className="text-gray-600 mb-6">
-            Explore a wide range of products at unbeatable prices.
-          </p>
-          <Link
-            to="/Products"
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-          >
-            Start Shopping
-          </Link>
-        </div>
+      {/* 🛒 Promo Section (synced style) */}
+      <div className="text-center mt-12 px-6">
+        <h2 className="text-4xl font-extrabold mb-4 text-gray-900">
+          Discover the Best Deals 🛒
+        </h2>
+
+        <p className="text-gray-600 max-w-xl mx-auto mb-8">
+          Explore a wide range of products at unbeatable prices.
+          Shop the latest trends and grab exciting offers today!
+        </p>
+
+        <Link
+          to="/Products"
+          className="px-8 py-3 bg-blue-600 text-white text-lg rounded-lg hover:bg-blue-700 transition font-medium shadow-md hover:shadow-lg"
+        >
+          Start Shopping
+        </Link>
       </div>
-    </>
+
+      {/* 🧭 FOOTER */}
+      <footer className="bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-600 text-white text-center py-6 mt-16">
+        <p className="text-sm">
+          © {new Date().getFullYear()} <b>WonderCart</b>. All rights reserved.
+        </p>
+      </footer>
+    </div>
   );
 }
+
+
+
