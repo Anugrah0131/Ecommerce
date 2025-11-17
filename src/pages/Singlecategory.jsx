@@ -95,7 +95,7 @@ function SingleCategory() {
                 <div className="mt-3 flex gap-2">
                   <Link
                     to={`/details/${p._id}`}
-                    className="px-3 py-1.5 bg-indigo-600 text-white text-xs rounded-md hover:bg-indigo-700 transition"
+                    className="px-3 py-1.5  text-white text-xs rounded-md hover:bg-indigo-400 transition"
                   >
                     View
                   </Link>

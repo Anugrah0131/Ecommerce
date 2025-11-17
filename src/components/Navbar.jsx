@@ -25,25 +25,46 @@ function Navbar() {
         <span className="text-yellow-300">Shop</span>Ease
       </Link>
 
-      {/* Search Bar */}
-      <div className="
-        flex items-center 
-        w-full md:w-[40%] 
-        bg-white/95 
-        rounded-full 
-        overflow-hidden 
-        shadow-md
-      ">
-        <input
-          type="text"
-          placeholder="Search for products..."
-          className="w-full px-4 py-2 text-gray-800 placeholder-gray-500 focus:outline-none"
-        />
-        <button className="px-4 bg-blue-600 hover:bg-blue-700 text-white transition">
-          <Search size={18} />
-        </button>
-      </div>
-
+     {/* Search Bar */}
+<div
+  className="
+    flex items-center 
+    w-full md:w-[40%]
+    bg-white/20 
+    backdrop-blur-lg
+    border border-white/30
+    rounded-full 
+    shadow-lg
+    overflow-hidden
+  "
+>
+  <input
+    type="text"
+    placeholder="Search products..."
+    className="
+      w-full 
+      px-4 py-2
+      bg-transparent
+      text-white 
+      placeholder-white/70
+      focus:outline-none 
+      focus:ring-0 
+      text-sm sm:text-base
+    "
+  />
+  <button
+    className="
+      bg-yellow-400 hover:bg-yellow-300 
+      text-black 
+      p-2 
+      rounded-full 
+      m-1
+      transition
+    "
+  >
+    <Search size={16} />
+  </button>
+</div>
       {/* Links & Buttons */}
       <div className="flex items-center gap-4 sm:gap-6 text-lg font-medium">
 

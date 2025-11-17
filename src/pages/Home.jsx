@@ -29,7 +29,7 @@ export default function Home() {
       <section className="flex flex-col md:flex-row justify-between items-center py-16 px-8 md:px-16 bg-gradient-to-r from-blue-50 to-blue-100">
         <div className="md:w-1/2 space-y-6 text-center md:text-left">
           <h2 className="text-5xl font-extrabold text-gray-800 leading-snug">
-            Welcome to{" "}
+            Welcome to{""}<br/>
             <span className="text-blue-600 drop-shadow-lg">Shop Ease</span>
           </h2>
           <p className="text-gray-600 text-lg max-w-md mx-auto md:mx-0">
@@ -45,7 +45,7 @@ export default function Home() {
 
         <div className="md:w-1/2 mt-10 md:mt-0 flex justify-center">
           <img
-            src="https://images.unsplash.com/photo-1606813902913-47c15f43c6b4?auto=format&fit=crop&w=900&q=80"
+            src="https://i.pinimg.com/280x280_RS/5b/35/07/5b350780e6cd26f0072f593a4da2714e.jpg"
             alt="Shopping"
             className="rounded-xl shadow-2xl w-full md:w-3/4"
           />
@@ -63,7 +63,7 @@ export default function Home() {
             <div
               key={cat._id}
               onClick={() => navigate(`/category/${cat._id}`)}
-              className="cursor-pointer flex flex-col items-center bg-gray-50 border border-gray-200 rounded-xl p-4 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300"
+              className="cursor-pointer flex flex-col items-center rounded-xl p-4 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300"
             >
               <img
                 src={cat.image}
@@ -100,7 +100,7 @@ export default function Home() {
       {/* 🧭 FOOTER */}
       <footer className="bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-600 text-white text-center py-6 mt-16">
         <p className="text-sm">
-          © {new Date().getFullYear()} <b>WonderCart</b>. All rights reserved.
+          © {new Date().getFullYear()} <b>Shop Ease</b>. All rights reserved.
         </p>
       </footer>
     </div>
