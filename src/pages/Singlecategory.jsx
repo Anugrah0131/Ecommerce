@@ -174,9 +174,12 @@ function SingleCategory() {
   )}
 
 </div>
-    </div>    
+    </div> 
+
   );
+
 }
+
 
 export default SingleCategory;
 

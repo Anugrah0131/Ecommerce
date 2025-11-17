@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 
 export default function Home() {
   const [categories, setCategories] = useState([]);
+  const [featured, setFeatured] = useState([]);
+
   const navigate = useNavigate();
 
   const fetchCategories = async () => {
@@ -21,6 +23,21 @@ export default function Home() {
   useEffect(() => {
     fetchCategories();
   }, []);
+
+  const fetchFeatured = async () => {
+  try {
+    const res = await fetch("http://localhost:8080/api/products");
+    const data = await res.json();
+
+    // Choose first 4 products as featured
+    setFeatured(data.slice(0, 4));
+  } catch (error) {
+    console.error("Error fetching featured:", error);
+  }
+};
+useEffect(() => {
+  fetchFeatured();
+}, []);
 
   return (
     <div className="w-full min-h-screen flex flex-col bg-gray-50 font-sans">
@@ -45,8 +62,7 @@ export default function Home() {
 
         <div className="md:w-1/2 mt-10 md:mt-0 flex justify-center">
           <img
-            src="https://i.pinimg.com/280x280_RS/5b/35/07/5b350780e6cd26f0072f593a4da2714e.jpg"
-            alt="Shopping"
+            src="public/shopEase.png"
             className="rounded-xl shadow-2xl w-full md:w-3/4"
           />
         </div>
@@ -76,6 +92,87 @@ export default function Home() {
         </h3>
       </div>
     ))}
+  </div>
+</section>
+ 
+ {/* ⭐ Featured Products Section */}
+<section className="py-16 px-8 md:px-16 bg-gray-50">
+  <h1 className="text-3xl font-bold text-center mb-12 text-blue-600">
+    Featured Products
+  </h1>
+
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 max-w-7xl mx-auto">
+    {featured.length === 0 ? (
+      <p className="text-center text-gray-500 col-span-4">
+        No featured products.
+      </p>
+    ) : (
+      featured.map((p) => (
+        <div
+          key={p._id}
+          onClick={() => navigate(`/details/${p._id}`)}
+          className="
+            cursor-pointer 
+            bg-white 
+            rounded-2xl 
+            shadow-lg 
+            hover:shadow-2xl 
+            transition-all 
+            duration-300 
+            hover:scale-[1.03] 
+            flex 
+            flex-col 
+            items-center 
+            p-6
+          "
+        >
+          {/* Image */}
+          <div className="w-full h-52 bg-gray-100 rounded-xl overflow-hidden flex justify-center items-center">
+            <img
+              src={p.image}
+              alt={p.title}
+              className="
+                object-contain 
+                w-full 
+                h-full 
+                transition-transform 
+                duration-300 
+                hover:scale-110
+              "
+            />
+          </div>
+
+          {/* Title */}
+          <h3 className="text-lg font-semibold text-gray-800 mt-4 text-center line-clamp-2">
+            {p.title}
+          </h3>
+
+          {/* Price */}
+          <p className="text-blue-600 font-bold text-xl mt-2">
+            ₹ {p.price}
+          </p>
+
+          {/* Button */}
+          <button
+            className="
+              mt-4 
+              w-full 
+              bg-blue-600 
+              hover:bg-blue-700 
+              text-white 
+              py-2.5 
+              rounded-lg 
+              font-medium 
+              transition
+              shadow-md
+              hover:shadow-lg
+            "
+          >
+            View Product
+          </button>
+        </div>
+      ))
+    )}
   </div>
 </section>
 

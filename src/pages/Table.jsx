@@ -6,6 +6,8 @@ function Table() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const [editingId, setEditingId] = useState(null);
+
   const [form, setForm] = useState({
     title: "",
     price: "",
@@ -16,7 +18,7 @@ function Table() {
   const API_URL = "http://localhost:8080/api/products";
   const CATEGORY_URL = "http://localhost:8080/api/categories";
 
-  // ✅ Fetch Categories
+  // Fetch Categories
   const fetchCategories = async () => {
     try {
       const res = await fetch(CATEGORY_URL);
@@ -28,7 +30,7 @@ function Table() {
     }
   };
 
-  // ✅ Fetch Products
+  // Fetch Products
   const fetchProducts = async () => {
     try {
       const res = await fetch(API_URL);
@@ -45,12 +47,12 @@ function Table() {
     fetchProducts();
   }, []);
 
-  // ✅ Handle Form Inputs
+  // Handle Input Change
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // ✅ Add Product
+  // Add / Update Product
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -60,31 +62,71 @@ function Table() {
     }
 
     setLoading(true);
+
     try {
-      const res = await fetch(API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
-      });
+      if (editingId) {
+        // UPDATE PRODUCT
+        const res = await fetch(`${API_URL}/${editingId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        });
 
-      if (!res.ok) throw new Error("Failed to add product");
+        if (!res.ok) throw new Error("Failed to update product");
+        const updated = await res.json();
 
-      const data = await res.json();
-      setProducts([...products, data.product || data]); // handles both response types
+        setProducts(
+          products.map((p) =>
+            p._id === editingId ? updated.product || updated : p
+          )
+        );
+
+        alert("Product updated successfully");
+        setEditingId(null);
+      } else {
+        // ADD PRODUCT
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        });
+
+        if (!res.ok) throw new Error("Failed to add product");
+
+        const data = await res.json();
+        setProducts([...products, data.product || data]);
+        alert("Product added successfully");
+      }
+
       setForm({ title: "", price: "", image: "", category: "" });
     } catch (error) {
-      console.error("Error adding product:", error);
-      alert("Error adding product");
+      console.error("Error:", error);
+      alert("Something went wrong");
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ Delete Product
+  // Load product details for editing
+  const startEditing = (product) => {
+    setEditingId(product._id);
+    setForm({
+      title: product.title,
+      price: product.price,
+      image: product.image,
+      category: product.category?._id || "",
+    });
+  };
+
+  // Cancel Editing
+  const cancelEdit = () => {
+    setEditingId(null);
+    setForm({ title: "", price: "", image: "", category: "" });
+  };
+
+  // Delete Product
   const deleteProduct = async (id) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete?");
+    const confirmDelete = window.confirm("Are you sure?");
     if (!confirmDelete) return;
 
     try {
@@ -92,10 +134,10 @@ function Table() {
       if (!res.ok) throw new Error("Failed to delete product");
 
       setProducts(products.filter((p) => p._id !== id));
-      alert("Product deleted successfully");
+      alert("Product deleted");
     } catch (error) {
-      console.error("Error deleting product:", error);
-      alert("Error deleting product");
+      console.error("Error deleting:", error);
+      alert("Error deleting");
     }
   };
 
@@ -105,13 +147,13 @@ function Table() {
         Product Manager
       </h1>
 
-      {/* ✅ Form Section */}
+      {/* Add / Edit Form */}
       <form
         onSubmit={handleSubmit}
         className="w-[90%] md:w-[72%] lg:w-[60%] bg-white shadow-lg p-6 m-10 rounded-lg"
       >
         <h2 className="text-2xl font-semibold text-gray-700 mb-4">
-          Add New Product
+          {editingId ? "Edit Product" : "Add New Product"}
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -121,7 +163,7 @@ function Table() {
             placeholder="Product Title"
             value={form.title}
             onChange={handleChange}
-            className="border rounded-md px-4 py-2 focus:ring-2 focus:ring-indigo-400"
+            className="border rounded-md px-4 py-2"
           />
           <input
             type="number"
@@ -129,7 +171,7 @@ function Table() {
             placeholder="Price (₹)"
             value={form.price}
             onChange={handleChange}
-            className="border rounded-md px-4 py-2 focus:ring-2 focus:ring-indigo-400"
+            className="border rounded-md px-4 py-2"
           />
           <input
             type="text"
@@ -137,13 +179,14 @@ function Table() {
             placeholder="Image URL"
             value={form.image}
             onChange={handleChange}
-            className="border rounded-md px-4 py-2 focus:ring-2 focus:ring-indigo-400"
+            className="border rounded-md px-4 py-2"
           />
+
           <select
             name="category"
             value={form.category}
             onChange={handleChange}
-            className="border rounded-md px-4 py-2 focus:ring-2 focus:ring-indigo-400"
+            className="border rounded-md px-4 py-2"
           >
             <option value="" disabled>
               Select Category
@@ -156,16 +199,34 @@ function Table() {
           </select>
         </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="mt-5 bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 transition-colors disabled:bg-gray-400"
-        >
-          {loading ? "Adding..." : "Add Product"}
-        </button>
+        <div className="flex gap-4 mt-5">
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-indigo-600 text-white px-6 py-2 rounded-md"
+          >
+            {loading
+              ? editingId
+                ? "Updating..."
+                : "Adding..."
+              : editingId
+              ? "Update Product"
+              : "Add Product"}
+          </button>
+
+          {editingId && (
+            <button
+              type="button"
+              onClick={cancelEdit}
+              className="bg-gray-400 text-white px-6 py-2 rounded-md"
+            >
+              Cancel
+            </button>
+          )}
+        </div>
       </form>
 
-      {/* ✅ Product Table */}
+      {/* Product Table */}
       <div className="w-[90%] md:w-[70%] bg-white shadow-xl rounded-lg overflow-hidden">
         <table className="w-full border-collapse">
           <thead className="bg-indigo-600 text-white">
@@ -175,17 +236,16 @@ function Table() {
               <th className="px-4 py-3 text-left">Name</th>
               <th className="px-4 py-3 text-left">Price</th>
               <th className="px-4 py-3 text-left">Category</th>
-              <th className="px-4 py-3 text-center">Action</th>
+              <th className="px-4 py-3 text-center">Actions</th>
             </tr>
           </thead>
+
           <tbody>
             {products.length > 0 ? (
               products.map((item, index) => (
-                <tr
-                  key={item._id || index}
-                  className="border-b hover:bg-indigo-50 transition-colors duration-200"
-                >
+                <tr key={item._id} className="border-b">
                   <td className="px-4 py-3 text-center">{index + 1}</td>
+
                   <td className="px-4 py-3 text-center">
                     <img
                       src={item.image}
@@ -193,20 +253,26 @@ function Table() {
                       className="w-14 h-14 object-contain rounded-md border mx-auto"
                     />
                   </td>
-                  <td className="px-4 py-3 font-medium text-gray-800 text-left">
-                    {item.title}
-                  </td>
-                  <td className="px-4 py-3 font-medium text-green-600 text-left">
-                    ₹ {item.price}
-                  </td>
-                  <td className="px-4 py-3 text-gray-700 text-left">
+
+                  <td className="px-4 py-3">{item.title}</td>
+                  <td className="px-4 py-3">₹ {item.price}</td>
+                  <td className="px-4 py-3">
                     {item.category?.name || "N/A"}
                   </td>
-                  <td className="px-4 py-3 text-center">
+
+                  <td className="px-4 py-3 text-center flex items-center justify-center gap-3">
+                    {/* EDIT BUTTON */}
+                    <button
+                      onClick={() => startEditing(item)}
+                      className="text-blue-600 hover:text-blue-800 font-medium"
+                    >
+                      Edit
+                    </button>
+
+                    {/* DELETE BUTTON */}
                     <button
                       onClick={() => deleteProduct(item._id)}
                       className="text-red-500 hover:text-red-700 text-2xl"
-                      title="Delete Product"
                     >
                       <TiDelete />
                     </button>
