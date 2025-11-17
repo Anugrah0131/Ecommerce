@@ -53,30 +53,32 @@ export default function Home() {
       </section>
 
       {/* 🏷 Shop by Category (your actual data) */}
-      <section className="py-16 px-8 md:px-16 bg-white">
-        <h1 className="text-3xl font-bold text-center mb-12 text-blue-600">
-          Shop by Category
-        </h1>
+<section className="py-16 px-8 md:px-16 bg-white">
+  <h1 className="text-3xl font-bold text-center mb-12 text-blue-600">
+    Shop by Category
+  </h1>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-10 max-w-6xl mx-auto">
-          {categories.map((cat) => (
-            <div
-              key={cat._id}
-              onClick={() => navigate(`/category/${cat._id}`)}
-              className="cursor-pointer flex flex-col items-center rounded-xl p-4 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300"
-            >
-              <img
-                src={cat.image}
-                alt={cat.name}
-                className="w-24 h-24 rounded-full object-cover border-2 border-blue-300 mb-3"
-              />
-              <h3 className="text-lg font-semibold text-gray-700">
-                {cat.name}
-              </h3>
-            </div>
-          ))}
-        </div>
-      </section>
+  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-10 max-w-6xl mx-auto">
+    {categories.map((cat) => (
+      <div
+        key={cat._id}
+        onClick={() => navigate(`/category/${cat._id}`)}
+        className="cursor-pointer flex flex-col items-center rounded-xl p-4 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300"
+      >
+        <img
+          src={cat.image}
+          alt={cat.name}
+          className="w-24 h-24 rounded-full object-cover border-2 border-blue-300 mb-3"
+        />
+
+        <h3 className="text-lg font-semibold text-gray-700">
+          {cat.name}
+        </h3>
+      </div>
+    ))}
+  </div>
+</section>
+
 
       {/* 🛒 Promo Section (synced style) */}
       <div className="text-center mt-12 px-6">
