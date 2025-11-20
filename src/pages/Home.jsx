@@ -240,6 +240,111 @@ export default function Home() {
   </div>
 </section>
 
+{/* 🌟 Brand Story Section */}
+<section className="py-20 px-6 md:px-16 bg-white">
+  <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+    
+    {/* Image */}
+    <motion.img
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f"
+      alt="Our Story"
+      className="rounded-2xl shadow-lg object-cover h-96 w-full"
+    />
+
+    {/* Text */}
+    <motion.div
+      initial={{ opacity: 0, x: 40 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.6 }}
+      className="space-y-6"
+    >
+      <h2 className="text-4xl font-bold text-gray-800 leading-tight">
+        ShopEase: Our Story
+      </h2>
+
+      <p className="text-gray-600 text-lg">
+        We started with a simple belief — **quality should be accessible**.
+        Every product we create is crafted with intention, detail, and passion.
+      </p>
+
+      <p className="text-gray-600 text-lg">
+        From day one, our mission has been to bring **modern designs**, 
+        **trusted quality**, and a **seamless shopping experience** to every customer.
+      </p>
+
+      <p className="text-gray-700 font-semibold text-xl">
+        Crafted with care. Built for you.
+      </p>
+    </motion.div>
+  
+  </div>
+</section>
+
+{/* 🌙 Premium Footer */}
+<footer className="bg-gray-900 text-gray-300 py-16 px-10 md:px-20">
+  <div className="max-w-6xl mx-auto grid md:grid-cols-4 gap-10">
+
+    {/* Brand */}
+    <div>
+      <h1 className="text-2xl font-bold text-white mb-4">ShopEase</h1>
+      <p className="text-gray-400 leading-relaxed">
+        Bringing you thoughtfully designed products  
+        that redefine everyday living.
+      </p>
+    </div>
+
+    {/* Links */}
+    <div>
+      <h3 className="text-lg font-semibold text-white mb-4">Quick Links</h3>
+      <ul className="space-y-3">
+        <li className="hover:text-white cursor-pointer transition">Home</li>
+        <li className="hover:text-white cursor-pointer transition">Shop</li>
+        <li className="hover:text-white cursor-pointer transition">Categories</li>
+        <li className="hover:text-white cursor-pointer transition">Contact</li>
+      </ul>
+    </div>
+
+    {/* Support */}
+    <div>
+      <h3 className="text-lg font-semibold text-white mb-4">Support</h3>
+      <ul className="space-y-3">
+        <li className="hover:text-white cursor-pointer transition">FAQs</li>
+        <li className="hover:text-white cursor-pointer transition">Shipping</li>
+        <li className="hover:text-white cursor-pointer transition">Returns</li>
+        <li className="hover:text-white cursor-pointer transition">Privacy Policy</li>
+      </ul>
+    </div>
+
+    {/* Newsletter */}
+    <div>
+      <h3 className="text-lg font-semibold text-white mb-4">Stay Updated</h3>
+      <p className="text-gray-400 mb-3">
+        Subscribe to receive updates, new launches & offers.
+      </p>
+
+      <div className="flex items-center">
+        <input
+          type="email"
+          placeholder="Enter your email"
+          className="w-full px-4 py-2 rounded-l-lg focus:outline-none text-gray-800"
+        />
+        <button className="bg-blue-600 px-4 py-2 rounded-r-lg text-white font-semibold hover:bg-blue-700 transition">
+          Join
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <div className="text-center text-gray-500 mt-12 border-t border-gray-700 pt-6">
+    © {new Date().getFullYear()} YourBrand · All Rights Reserved.
+  </div>
+</footer>
+
+
 
     </div>
   );
