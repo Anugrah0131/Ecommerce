@@ -12,6 +12,7 @@ import Addtocart from "./pages/Addtocart";
 import Table from "./pages/Table";
 import Category from "./pages/Category";
 import SingleCategory from "./pages/Singlecategory";
+import SearchResults from "./pages/SearchResults";  
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -27,6 +28,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/addtocart" element={<Addtocart />} />
         <Route path="/table" element={<Table />} />
         <Route path="/category" element={<Category />} />
+        <Route path="/search" element={<SearchResults />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>
