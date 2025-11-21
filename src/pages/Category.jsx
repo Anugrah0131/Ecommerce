@@ -33,6 +33,13 @@ function CategoryTable() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  //Handle file input change
+   const handleFileChange = (e) => {
+    setForm({ ...form, image: e.target.files[0] });
+  };
+
+
+
   // Submit for Add + Update
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,6 +52,11 @@ function CategoryTable() {
     setLoading(true);
 
     try {
+      const formData = new FormData();
+      formData.append("name", form.name);
+      formData.append("description", form.description);
+      formData.append("image", form.image);
+    
       let res;
 
       if (editingId) {
@@ -52,14 +64,14 @@ function CategoryTable() {
         res = await fetch(`${API_URL}/${editingId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
+          body: formData,
         });
       } else {
         // ⭐ ADD NEW CATEGORY
         res = await fetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
+          body: formData,
         });
       }
 
@@ -81,9 +93,13 @@ function CategoryTable() {
     setForm({
       name: cat.name,
       description: cat.description,
-      image: cat.image,
+      image: "",
     });
     setEditingId(cat._id);
+    {editingId && (
+  <img src={cat.image} className="w-20 h-20 mt-2" />
+)}
+
   };
 
   // Delete category
@@ -128,6 +144,7 @@ function CategoryTable() {
             onChange={handleChange}
             className="border rounded-md px-4 py-2 focus:ring-2 focus:ring-indigo-400"
           />
+          
           <input
             type="text"
             name="description"
@@ -136,14 +153,15 @@ function CategoryTable() {
             onChange={handleChange}
             className="border rounded-md px-4 py-2 focus:ring-2 focus:ring-indigo-400"
           />
-          <input
-            type="text"
-            name="image"
-            placeholder="Image URL"
-            value={form.image}
-            onChange={handleChange}
-            className="border rounded-md px-4 py-2 focus:ring-2 focus:ring-indigo-400"
-          />
+
+       <input
+         type="file"
+         name="image"
+         accept="image/*"
+         onChange={handleFileChange}
+         className="border rounded-md px-4 py-2"
+       />
+
         </div>
 
         <button
