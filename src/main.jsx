@@ -13,6 +13,7 @@ import Table from "./pages/Table";
 import Category from "./pages/Category";
 import SingleCategory from "./pages/Singlecategory";
 import SearchResults from "./pages/SearchResults";  
+import Signup from "./components/SignUp";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -29,6 +30,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/table" element={<Table />} />
         <Route path="/category" element={<Category />} />
         <Route path="/search" element={<SearchResults />} />
+        <Route path="/signup" element={<Signup />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>
