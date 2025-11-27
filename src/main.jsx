@@ -14,6 +14,8 @@ import Category from "./pages/Category";
 import SingleCategory from "./pages/Singlecategory";
 import SearchResults from "./pages/SearchResults";  
 import Signup from "./components/SignUp";
+import Dashboard from "./pages/Dashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -21,16 +23,28 @@ createRoot(document.getElementById("root")).render(
       <Navbar />
 
       <Routes>
+        {/* Public Routes */}
+
         <Route path="/" element={<Home />} />
         <Route path="/category/:id" element={<SingleCategory />} />
         <Route path="/products" element={<Products />} />
         <Route path="/details/:id" element={<Details />} />
-        <Route path="/login" element={<Login />} />
         <Route path="/addtocart" element={<Addtocart />} />
         <Route path="/table" element={<Table />} />
         <Route path="/category" element={<Category />} />
         <Route path="/search" element={<SearchResults />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+
+        {/* Protected Routes */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   </StrictMode>
