@@ -7,17 +7,15 @@ function Table() {
   const [loading, setLoading] = useState(false);
 
   const [editingId, setEditingId] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
 
   const [form, setForm] = useState({
     title: "",
     price: "",
-    // image holds either a string (existing image path) or a File (new upload)
     image: "",
     category: "",
     description: "",
   });
-
-  const [previewUrl, setPreviewUrl] = useState(null); // preview for newly selected file
 
   const API_URL = "http://localhost:8080/api/products";
   const CATEGORY_URL = "http://localhost:8080/api/categories";
@@ -27,11 +25,10 @@ function Table() {
   const fetchCategories = async () => {
     try {
       const res = await fetch(CATEGORY_URL);
-      if (!res.ok) throw new Error("Failed to fetch categories");
       const data = await res.json();
       setCategories(data);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -39,11 +36,10 @@ function Table() {
   const fetchProducts = async () => {
     try {
       const res = await fetch(API_URL);
-      if (!res.ok) throw new Error("Failed to fetch products");
       const data = await res.json();
       setProducts(data);
-    } catch (error) {
-      console.error("Error fetching products:", error);
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -52,30 +48,30 @@ function Table() {
     fetchProducts();
   }, []);
 
-  // ---------- Helpers ----------
+  // ---------- Get Correct Image URL ----------
   const getImageUrl = (img) => {
     if (!img) return null;
+
     if (typeof img === "string") {
-      if (img.startsWith("http://") || img.startsWith("https://")) return img;
+      if (img.startsWith("http")) return img;
       if (img.startsWith("/")) return `${BACKEND_BASE}${img}`;
       return `${BACKEND_BASE}/uploads/${img}`;
     }
-    // if it's a File object, create preview
+
     return previewUrl;
   };
 
-  // ---------- Input handlers ----------
+  // ---------- Handle Input ----------
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
     if (name === "image") {
-      const file = files && files[0];
+      const file = files?.[0];
+
       if (file) {
         setForm((prev) => ({ ...prev, image: file }));
-        const url = URL.createObjectURL(file);
-        setPreviewUrl(url);
+        setPreviewUrl(URL.createObjectURL(file));
       } else {
-        // cleared file input
         setForm((prev) => ({ ...prev, image: "" }));
         setPreviewUrl(null);
       }
@@ -84,30 +80,28 @@ function Table() {
     }
   };
 
-  // ---------- Reset form ----------
+  // ---------- Reset Form ----------
   const resetForm = () => {
     setForm({ title: "", price: "", image: "", category: "", description: "" });
-    setEditingId(null);
     setPreviewUrl(null);
+    setEditingId(null);
   };
 
   // ---------- Submit (Add / Update) ----------
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // basic validation
     if (!form.title || !form.price || !form.category) {
-      alert("Please fill title, price and category");
+      alert("Please fill title, price, and category");
       return;
     }
 
     setLoading(true);
 
     try {
-      // Determine whether to send FormData (if image is File) or JSON
       const isFile = form.image instanceof File;
-
       let res;
+
       if (editingId) {
         // UPDATE
         if (isFile) {
@@ -115,15 +109,14 @@ function Table() {
           fd.append("title", form.title);
           fd.append("price", form.price);
           fd.append("category", form.category);
-          fd.append("description", form.description || "");
-          fd.append("image", form.image); // file
+          fd.append("description", form.description);
+          fd.append("image", form.image);
 
           res = await fetch(`${API_URL}/${editingId}`, {
             method: "PUT",
-            body: fd, // NO headers
+            body: fd,
           });
         } else {
-          // No new file chosen — send JSON and keep existing image on server
           res = await fetch(`${API_URL}/${editingId}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -131,7 +124,7 @@ function Table() {
               title: form.title,
               price: form.price,
               category: form.category,
-              description: form.description || "",
+              description: form.description,
               image: typeof form.image === "string" ? form.image : "",
             }),
           });
@@ -142,71 +135,59 @@ function Table() {
         fd.append("title", form.title);
         fd.append("price", form.price);
         fd.append("category", form.category);
-        fd.append("description", form.description || "");
+        fd.append("description", form.description);
         if (isFile) fd.append("image", form.image);
 
         res = await fetch(API_URL, {
           method: "POST",
-          body: fd, // NO headers
+          body: fd,
         });
       }
 
-      if (!res.ok) {
-        const text = await res.text().catch(() => null);
-        throw new Error(text || "Failed to save product");
-      }
+      if (!res.ok) throw new Error("Failed to save product");
 
       const saved = await res.json();
 
       if (editingId) {
-        // update local list
         setProducts((prev) => prev.map((p) => (p._id === editingId ? saved : p)));
-        alert("Product updated successfully");
+        alert("Product updated");
       } else {
         setProducts((prev) => [...prev, saved]);
-        alert("Product added successfully");
+        alert("Product added");
       }
 
       resetForm();
-    } catch (error) {
-      console.error("Error saving product:", error);
-      alert("Error saving product");
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong");
     } finally {
       setLoading(false);
     }
   };
 
-  // ---------- Start editing ----------
+  // ---------- Edit ----------
   const startEditing = (product) => {
     setEditingId(product._id);
     setForm({
-      title: product.title || "",
-      price: product.price || "",
-      image: product.image || "", // keep as string path until user uploads new file
+      title: product.title,
+      price: product.price,
+      image: product.image,
       category: product.category?._id || "",
-      description: product.description || "",
+      description: product.description,
     });
     setPreviewUrl(null);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // ---------- Cancel edit ----------
-  const cancelEdit = () => {
-    resetForm();
-  };
-
   // ---------- Delete ----------
   const deleteProduct = async (id) => {
-    const confirmDelete = window.confirm("Are you sure?");
-    if (!confirmDelete) return;
+    if (!window.confirm("Are you sure?")) return;
 
     try {
-      const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Failed to delete product");
+      await fetch(`${API_URL}/${id}`, { method: "DELETE" });
       setProducts((prev) => prev.filter((p) => p._id !== id));
       alert("Product deleted");
-    } catch (error) {
-      console.error("Error deleting product:", error);
+    } catch {
       alert("Error deleting product");
     }
   };
@@ -215,7 +196,7 @@ function Table() {
     <div className="w-full min-h-screen bg-gray-100 flex flex-col items-center py-10">
       <h1 className="text-2xl font-semibold text-gray-600 mb-4">Product Manager</h1>
 
-      {/* Add / Edit Form */}
+      {/* Form */}
       <form
         onSubmit={handleSubmit}
         className="w-[90%] md:w-[72%] lg:w-[60%] bg-white shadow-lg p-6 m-10 rounded-lg"
@@ -233,6 +214,7 @@ function Table() {
             onChange={handleChange}
             className="border rounded-md px-4 py-2"
           />
+
           <input
             type="number"
             name="price"
@@ -242,7 +224,7 @@ function Table() {
             className="border rounded-md px-4 py-2"
           />
 
-          {/* File input now */}
+          {/* Image Upload */}
           <div>
             <input
               type="file"
@@ -251,54 +233,50 @@ function Table() {
               onChange={handleChange}
               className="border rounded-md px-4 py-2 w-full"
             />
+
             <div className="mt-2">
               {previewUrl ? (
                 <img
                   src={previewUrl}
-                  alt="Preview"
-                  className="w-24 h-24 object-contain rounded-md border"
+                  className="w-24 h-24 object-contain border rounded-md"
                 />
               ) : form.image ? (
                 <img
                   src={getImageUrl(form.image)}
-                  alt="Existing"
-                  className="w-24 h-24 object-contain rounded-md border"
+                  className="w-24 h-24 object-contain border rounded-md"
                 />
               ) : (
-                <div className="w-24 h-24 flex items-center justify-center border rounded-md text-sm text-gray-400">
+                <div className="w-24 h-24 border rounded-md flex items-center justify-center text-gray-400 text-sm">
                   No Image
                 </div>
               )}
             </div>
           </div>
 
+          {/* Category */}
           <select
             name="category"
             value={form.category}
             onChange={handleChange}
             className="border rounded-md px-4 py-2"
           >
-            <option value="" disabled>
-              Select Category
-            </option>
+            <option value="">Select Category</option>
             {categories.map((cat) => (
-              <option key={cat._id} value={cat._1d ?? cat._id}>
+              <option key={cat._id} value={cat._id}>
                 {cat.name}
               </option>
             ))}
           </select>
         </div>
 
-        <div className="mt-4">
-          <textarea
-            name="description"
-            placeholder="Description (optional)"
-            value={form.description}
-            onChange={handleChange}
-            className="border rounded-md px-4 py-2 w-full"
-            rows={3}
-          />
-        </div>
+        <textarea
+          name="description"
+          placeholder="Description (optional)"
+          value={form.description}
+          onChange={handleChange}
+          className="border rounded-md px-4 py-2 w-full mt-4"
+          rows={3}
+        />
 
         <div className="flex gap-4 mt-5">
           <button
@@ -306,13 +284,19 @@ function Table() {
             disabled={loading}
             className="bg-indigo-600 text-white px-6 py-2 rounded-md"
           >
-            {loading ? (editingId ? "Updating..." : "Adding...") : editingId ? "Update Product" : "Add Product"}
+            {loading
+              ? editingId
+                ? "Updating..."
+                : "Adding..."
+              : editingId
+              ? "Update Product"
+              : "Add Product"}
           </button>
 
           {editingId && (
             <button
               type="button"
-              onClick={cancelEdit}
+              onClick={resetForm}
               className="bg-gray-400 text-white px-6 py-2 rounded-md"
             >
               Cancel
@@ -321,59 +305,50 @@ function Table() {
         </div>
       </form>
 
-      {/* Product Table */}
+      {/* Table */}
       <div className="w-[90%] md:w-[70%] bg-white shadow-xl rounded-lg overflow-hidden">
         <table className="w-full border-collapse">
           <thead className="bg-indigo-600 text-white">
             <tr>
-              <th className="px-4 py-3 text-left">No</th>
-              <th className="px-4 py-3 text-left">Image</th>
-              <th className="px-4 py-3 text-left">Name</th>
-              <th className="px-4 py-3 text-left">Price</th>
-              <th className="px-4 py-3 text-left">Category</th>
+              <th className="px-4 py-3">No</th>
+              <th className="px-4 py-3">Image</th>
+              <th className="px-4 py-3">Name</th>
+              <th className="px-4 py-3">Price</th>
+              <th className="px-4 py-3">Category</th>
               <th className="px-4 py-3 text-center">Actions</th>
             </tr>
           </thead>
 
           <tbody>
-            {products.length > 0 ? (
+            {products.length ? (
               products.map((item, index) => (
                 <tr key={item._id} className="border-b">
                   <td className="px-4 py-3 text-center">{index + 1}</td>
-
                   <td className="px-4 py-3 text-center">
                     {item.image ? (
                       <img
                         src={getImageUrl(item.image)}
-                        alt={item.title}
-                        className="w-14 h-14 object-contain rounded-md border mx-auto"
+                        className="w-14 h-14 object-contain border rounded-md mx-auto"
                       />
                     ) : (
-                      <div className="w-14 h-14 flex items-center justify-center border rounded-md text-xs text-gray-400 mx-auto">
+                      <div className="w-14 h-14 border rounded-md flex items-center justify-center text-xs text-gray-400 mx-auto">
                         No Image
                       </div>
                     )}
                   </td>
-
                   <td className="px-4 py-3">{item.title}</td>
                   <td className="px-4 py-3">₹ {item.price}</td>
-                  <td className="px-4 py-3">
-                    {item.category?.name || "N/A"}
-                  </td>
-
-                  <td className="px-4 py-3 text-center flex items-center justify-center gap-3">
-                    {/* EDIT BUTTON */}
+                  <td className="px-4 py-3">{item.category?.name}</td>
+                  <td className="px-4 py-3 flex gap-3 justify-center">
                     <button
                       onClick={() => startEditing(item)}
-                      className="text-blue-600 hover:text-blue-800 font-medium"
+                      className="text-blue-600"
                     >
                       Edit
                     </button>
-
-                    {/* DELETE BUTTON */}
                     <button
                       onClick={() => deleteProduct(item._id)}
-                      className="text-red-500 hover:text-red-700 text-2xl"
+                      className="text-red-500 text-2xl"
                     >
                       <TiDelete />
                     </button>
@@ -382,10 +357,7 @@ function Table() {
               ))
             ) : (
               <tr>
-                <td
-                  colSpan="6"
-                  className="text-center py-6 text-gray-500 font-medium"
-                >
+                <td colSpan="6" className="py-6 text-center text-gray-500">
                   No Products Found
                 </td>
               </tr>
