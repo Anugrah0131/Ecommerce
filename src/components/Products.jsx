@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import Card from "./Card"; // Using your redesigned Card
-import Navbar from "./Navbar";
+import Card from "./Card"; 
+
 
 function Products() {
   const [products, setProducts] = useState([]);
@@ -32,8 +32,7 @@ function Products() {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
-      <Navbar />
-
+    
       {/* Hero */}
       <section className="py-16 bg-gradient-to-r from-blue-50 to-blue-100">
         <h1 className="text-4xl md:text-5xl font-extrabold text-center text-gray-800 drop-shadow-md">

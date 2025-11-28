@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Truck, ShieldCheck, Star, Headphones } from "lucide-react";
-import Navbar from "../components/Navbar"; // ← adjust path if your Navbar is elsewhere
+
 
 export default function Home() {
   const [categories, setCategories] = useState([]);
@@ -48,8 +48,7 @@ export default function Home() {
 
   return (
     <div className="w-full min-h-screen flex flex-col bg-[#f6f9fb] text-gray-800 font-inter">
-      {/* NAVBAR (advanced) */}
-      <Navbar />
+      
 
       {/* HERO */}
       <section className="w-full bg-gradient-to-r from-[#f8fbff] to-[#ffffff]">
@@ -72,25 +71,6 @@ export default function Home() {
               </span>
             </h1>
 
-            <p className="text-lg text-gray-600 max-w-xl">
-              Discover beautifully crafted items and exclusive deals — curated with care to elevate your daily life.
-            </p>
-
-            <div className="flex items-center gap-4 mt-4">
-              <Link
-                to="/products"
-                className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-3 rounded-2xl font-semibold shadow-lg hover:scale-[1.02] transition-transform"
-              >
-                🛍️ Start Shopping
-              </Link>
-
-              <Link
-                to="/about"
-                className="text-sm px-4 py-3 rounded-full border border-gray-200 hover:bg-gray-50 transition"
-              >
-                Learn more
-              </Link>
-            </div>
 
             <div className="mt-8 grid grid-cols-3 gap-4 max-w-md">
               <div className="flex items-start gap-3">
@@ -125,33 +105,7 @@ export default function Home() {
             </div>
           </motion.div>
 
-          {/* Right */}
-          <motion.div
-            initial={{ opacity: 0, x: 16 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            className="flex justify-center md:justify-end"
-          >
-            <div className="relative w-full max-w-md rounded-3xl shadow-2xl overflow-hidden ring-1 ring-white/30">
-              <img
-                src="https://cdn.dribbble.com/userupload/15526773/file/original-03a0f1267c918df1cd98b8d8c972404e.jpg?resize=752x&vertical=center"
-                alt="hero visual"
-                className="w-full h-full object-cover"
-              />
 
-              {/* cosmetic floating cards */}
-              <div className="absolute -left-6 -bottom-6 w-44 bg-white rounded-2xl p-3 shadow-xl border border-gray-100">
-                <div className="text-xs text-gray-500">Featured</div>
-                <div className="font-semibold mt-2">Stylish Lamp</div>
-                <div className="text-blue-600 font-bold mt-1">₹2,399</div>
-              </div>
-
-              <div className="absolute -right-6 top-6 w-36 bg-white rounded-2xl p-3 shadow-xl border border-gray-100">
-                <div className="text-sm font-semibold">New</div>
-                <div className="text-xs text-gray-500">Mini Planter</div>
-              </div>
-            </div>
-          </motion.div>
         </div>
       </section>
 

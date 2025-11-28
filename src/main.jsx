@@ -1,10 +1,9 @@
 import React, { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
+import Navbar from "./components/Navbar";
 import "./index.css";
 import Home from "./pages/Home";
-import Navbar from "./components/Navbar"; 
 import Products from "./components/Products";
 import Details from "./pages/Details";
 import Login from "./pages/Login";
@@ -26,7 +25,7 @@ createRoot(document.getElementById("root")).render(
 
       <Routes>
         {/* Public Routes */}
-
+        
         <Route path="/" element={<Home />} />
         <Route path="/category/:id" element={<SingleCategory />} />
         <Route path="/products" element={<Products />} />
@@ -34,7 +33,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/cart" element={<Cart />} />
         <Route path="/login" element={<Login />} />
         <Route path="/table" element={<Table />} />
-        <Route path="/category" element={<Category />} />
+        <Route path="/categories" element={<Category />} />
         <Route path="/search" element={<SearchResults />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/about" element={<About />} />
