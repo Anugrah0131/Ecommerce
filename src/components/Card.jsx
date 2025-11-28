@@ -8,18 +8,21 @@ function Card({ id, title, price, image, category, badge }) {
   return (
     <motion.div
       key={id}
-      whileHover={{ scale: 1.05 }}
+      whileHover={{ scale: 1.03 }}
       transition={{ type: "spring", stiffness: 200, damping: 15 }}
-      className="relative w-64 bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200"
+      className="relative w-64 bg-white backdrop-blur-md/70 rounded-3xl shadow-md hover:shadow-2xl border border-gray-200 overflow-hidden flex flex-col"
     >
-      {/* Wishlist Heart Button */}
-      <button className="absolute top-3 right-3 bg-white rounded-full p-2 shadow-md hover:bg-red-500 hover:text-white transition">
+      {/* Wishlist Button */}
+      <button
+        className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-white shadow hover:bg-red-500 hover:text-white transition"
+        title="Add to wishlist"
+      >
         <Heart className="w-4 h-4" />
       </button>
 
       {/* Badge */}
       {badge && (
-        <span className="absolute top-3 left-3 bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
+        <span className="absolute top-3 left-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
           {badge}
         </span>
       )}
@@ -40,30 +43,25 @@ function Card({ id, title, price, image, category, badge }) {
       </Link>
 
       {/* Product Info */}
-      <div className="p-4 text-center">
-        <h2 className="text-lg font-bold text-gray-800 truncate">
-          {title}
-        </h2>
-
-        <p className="text-gray-500 mt-1 text-sm">{category}</p>
-
-        <p className="text-2xl font-bold text-blue-600 mt-2">₹{price}</p>
+      <div className="p-5 flex flex-col flex-1 justify-between">
+        <div className="text-center">
+          <h2 className="text-lg font-bold text-gray-900 truncate">{title}</h2>
+          <p className="text-gray-500 text-sm mt-1">{category}</p>
+          <p className="text-xl font-bold text-blue-600 mt-2">₹{price}</p>
+        </div>
 
         {/* Buttons */}
-        <div className="mt-5 flex justify-center gap-3 w-full">
+        <div className="mt-4 flex gap-3 justify-center">
           {/* View Button */}
           <Link
             to={`/details/${id}`}
-            className="px-4 py-2 bg-gray-900 text-white rounded-xl hover:bg-black transition flex items-center gap-1 shadow"
+            className="flex items-center gap-1 px-4 py-2 bg-gray-900 text-white rounded-2xl shadow hover:bg-black transition"
           >
-            <Eye className="w-4 h-4" />
-            View
+            <Eye className="w-4 h-4" /> View
           </Link>
 
-          {/* Add To Cart Component */}
-          <AddToCartButton
-            product={{ _id: id, title, price, image, category }}
-          />
+          {/* Add to Cart */}
+          <AddToCartButton product={{ _id: id, title, price, image, category }} />
         </div>
       </div>
     </motion.div>

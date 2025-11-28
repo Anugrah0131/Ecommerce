@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import "./index.css";
 import Home from "./pages/Home";
-import Navbar from "./components/Navbar";
+import Navbar from "./components/Navbar"; 
 import Products from "./components/Products";
 import Details from "./pages/Details";
 import Login from "./pages/Login";
@@ -15,7 +15,7 @@ import SearchResults from "./pages/SearchResults";
 import Contact from "./components/Contact";
 import About from "./components/About";
 import Cart from "./pages/Cart";
-import Signup from "./components/SignUp";
+import Signup from "./components/Signup";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -41,14 +41,14 @@ createRoot(document.getElementById("root")).render(
         <Route path="/signup" element={<Signup />} />
 
         {/* Protected Routes */}
-        {/* <Route
+        <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
               <Dashboard />
             </ProtectedRoute>
           }
-        /> */}
+        />
       </Routes>
     </BrowserRouter>
   </StrictMode>

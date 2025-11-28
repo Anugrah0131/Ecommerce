@@ -5,7 +5,6 @@ import { ShoppingCart } from "lucide-react";
 export default function AddToCart({ product }) {
   const [cart, setCart] = useState([]);
 
-  // Load cart on mount
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem("cart")) || [];
     setCart(stored);
@@ -13,7 +12,6 @@ export default function AddToCart({ product }) {
 
   const addToCart = () => {
     const stored = JSON.parse(localStorage.getItem("cart")) || [];
-
     const exist = stored.find((item) => item._id === product._id);
 
     if (exist) {
@@ -25,30 +23,51 @@ export default function AddToCart({ product }) {
     localStorage.setItem("cart", JSON.stringify(stored));
     setCart(stored);
 
-    // Toast message
+    // Toast notification
     const toast = document.createElement("div");
-    toast.className =
-      "fixed top-5 right-5 bg-blue-600 text-white px-5 py-3 rounded-xl shadow-xl z-50 animate-slide";
-    toast.innerText = "Added to Cart!";
+    toast.className = `
+      fixed top-5 right-5
+      bg-gradient-to-r from-blue-600 to-indigo-600
+      text-white px-6 py-3 rounded-2xl shadow-xl
+      z-50 flex items-center gap-2 font-semibold
+      animate-toast
+    `;
+    toast.innerText = `✔ Added "${product.title}" to Cart!`;
     document.body.appendChild(toast);
 
-    setTimeout(() => toast.remove(), 1800);
+    setTimeout(() => toast.remove(), 2200);
   };
 
   return (
-    <motion.button
-      whileTap={{ scale: 0.9 }}
-      onClick={addToCart}
-      className="
-        flex items-center justify-center gap-2
-        bg-yellow-500 hover:bg-yellow-400
-        text-black font-semibold
-        px-4 py-2 rounded-lg shadow-md
-        transition w-full
-      "
-    >
-      <ShoppingCart size={18} />
-      Add to Cart
-    </motion.button>
+    <>
+      <motion.button
+        whileTap={{ scale: 0.95 }}
+        onClick={addToCart}
+        className="
+          w-full flex items-center justify-center gap-2
+          bg-gradient-to-r from-yellow-400 to-yellow-500
+          hover:from-yellow-500 hover:to-yellow-400
+          text-black font-semibold
+          px-4 py-3 rounded-2xl shadow-md hover:shadow-lg
+          transition-all duration-300
+        "
+      >
+        <ShoppingCart size={18} />
+        Add to Cart
+      </motion.button>
+
+      {/* Tailwind custom animation */}
+      <style>{`
+        @keyframes toastSlide {
+          0% { opacity: 0; transform: translateX(100%) translateY(-10px); }
+          10% { opacity: 1; transform: translateX(0) translateY(0); }
+          90% { opacity: 1; transform: translateX(0) translateY(0); }
+          100% { opacity: 0; transform: translateX(100%) translateY(-10px); }
+        }
+        .animate-toast {
+          animation: toastSlide 2.2s ease-in-out forwards;
+        }
+      `}</style>
+    </>
   );
 }

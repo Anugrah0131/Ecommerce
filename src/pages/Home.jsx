@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Truck, ShieldCheck, Star, Headphones } from "lucide-react";
-
+import Navbar from "../components/Navbar"; // ← adjust path if your Navbar is elsewhere
 
 export default function Home() {
   const [categories, setCategories] = useState([]);
@@ -10,9 +10,7 @@ export default function Home() {
 
   const navigate = useNavigate();
 
-
   // FETCH CATEGORIES
-
   const fetchCategories = async () => {
     try {
       const res = await fetch("http://localhost:8080/api/categories");
@@ -49,306 +47,314 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="w-full min-h-screen flex flex-col bg-gray-50 font-sans">
+    <div className="w-full min-h-screen flex flex-col bg-[#f6f9fb] text-gray-800 font-inter">
+      {/* NAVBAR (advanced) */}
+      <Navbar />
 
-      {/*HERO SECTION */}
-
-      <section className="flex flex-col md:flex-row justify-between items-center py-16 px-8 md:px-16 bg-gradient-to-r from-blue-50 to-blue-100">
-        <div className="md:w-1/2 space-y-6 text-center md:text-left">
-          <h2 className="text-5xl font-extrabold text-gray-800 leading-snug">
-            Welcome to <br />
-            <span className="text-blue-600 drop-shadow-lg">Shop Ease</span>
-          </h2>
-          <p className="text-gray-600 text-lg max-w-md mx-auto md:mx-0">
-            Discover high-quality products and exclusive deals — all in one place!
-          </p>
-          <Link
-            to="/Products"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 inline-block"
+      {/* HERO */}
+      <section className="w-full bg-gradient-to-r from-[#f8fbff] to-[#ffffff]">
+        <div className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          {/* Left */}
+          <motion.div
+            initial={{ opacity: 0, x: -16 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            className="space-y-6"
           >
-            🛍️ Start Shopping
-          </Link>
-        </div>
-
-        <div className="md:w-1/2 mt-10 md:mt-0 flex justify-center">
-          <img
-            src="public/shopEase.png"
-            className="rounded-xl shadow-2xl w-full md:w-3/4"
-          />
-        </div>
-      </section>
-
-      {/*Shop by Category */}
-      <section className="py-16 px-8 md:px-16 bg-white">
-        <h1 className="text-3xl font-bold text-center mb-12 text-blue-600">
-          Shop by Category
-        </h1>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-10 max-w-6xl mx-auto">
-          {categories.map((cat) => (
-            <div
-              key={cat._id}
-              onClick={() => navigate(`/category/${cat._id}`)}
-              className="cursor-pointer flex flex-col items-center rounded-xl p-4 shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300"
-            >
-              <img
-                src={cat.image}
-                alt={cat.name}
-                className="w-24 h-24 rounded-full object-cover border-2 border-blue-300 mb-3"
-              />
-              <h3 className="text-lg font-semibold text-gray-700">{cat.name}</h3>
+            <div className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-full px-3 py-1 text-sm text-blue-600 font-medium shadow-sm w-max">
+              Curated · Premium · Fast
             </div>
-          ))}
-        </div>
-      </section>
 
-      {/* Featured Products Section */}
-      <section className="py-16 px-8 md:px-16 bg-gray-50">
-        <h1 className="text-3xl font-bold text-center mb-12 text-blue-600">
-          Featured Products
-        </h1>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl leading-tight font-extrabold text-gray-900">
+              Modern products, made for{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
+                everyday living
+              </span>
+            </h1>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 max-w-7xl mx-auto">
-          {featured.length === 0 ? (
-            <p className="text-center text-gray-500 col-span-4">
-              No featured products.
+            <p className="text-lg text-gray-600 max-w-xl">
+              Discover beautifully crafted items and exclusive deals — curated with care to elevate your daily life.
             </p>
-          ) : (
-            featured.map((p) => (
-              <div
-                key={p._id}
-                onClick={() => navigate(`/details/${p._id}`)}
-                className="
-                  cursor-pointer 
-                  bg-white 
-                  rounded-2xl 
-                  shadow-lg 
-                  hover:shadow-2xl 
-                  transition-all 
-                  duration-300 
-                  hover:scale-[1.03] 
-                  flex 
-                  flex-col 
-                  items-center 
-                  p-6
-                "
+
+            <div className="flex items-center gap-4 mt-4">
+              <Link
+                to="/products"
+                className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-3 rounded-2xl font-semibold shadow-lg hover:scale-[1.02] transition-transform"
               >
-                <div className="w-full h-52 bg-gray-100 rounded-xl overflow-hidden flex justify-center items-center">
-                  <img
-                    src={p.image}
-                    alt={p.title}
-                    className="
-                      object-contain 
-                      w-full 
-                      h-full 
-                      transition-transform 
-                      duration-300 
-                      hover:scale-110
-                    "
-                  />
+                🛍️ Start Shopping
+              </Link>
+
+              <Link
+                to="/about"
+                className="text-sm px-4 py-3 rounded-full border border-gray-200 hover:bg-gray-50 transition"
+              >
+                Learn more
+              </Link>
+            </div>
+
+            <div className="mt-8 grid grid-cols-3 gap-4 max-w-md">
+              <div className="flex items-start gap-3">
+                <div className="p-2 rounded-lg bg-blue-50">
+                  <Truck className="w-5 h-5 text-blue-600" />
                 </div>
-
-                <h3 className="text-lg font-semibold text-gray-800 mt-4 text-center line-clamp-2">
-                  {p.title}
-                </h3>
-
-                <p className="text-blue-600 font-bold text-xl mt-2">₹ {p.price}</p>
-
-                <button
-                  className="
-                    mt-4 
-                    w-full 
-                    bg-blue-600 
-                    hover:bg-blue-700 
-                    text-white 
-                    py-2.5 
-                    rounded-lg 
-                    font-medium 
-                    transition
-                    shadow-md
-                    hover:shadow-lg
-                  "
-                >
-                  View Product
-                </button>
+                <div>
+                  <div className="text-sm font-semibold">Fast delivery</div>
+                  <div className="text-sm text-gray-500">Across India</div>
+                </div>
               </div>
-            ))
-          )}
+
+              <div className="flex items-start gap-3">
+                <div className="p-2 rounded-lg bg-blue-50">
+                  <ShieldCheck className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <div className="text-sm font-semibold">Secure payments</div>
+                  <div className="text-sm text-gray-500">Encrypted & safe</div>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="p-2 rounded-lg bg-blue-50">
+                  <Headphones className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <div className="text-sm font-semibold">Support</div>
+                  <div className="text-sm text-gray-500">24/7 help</div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Right */}
+          <motion.div
+            initial={{ opacity: 0, x: 16 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            className="flex justify-center md:justify-end"
+          >
+            <div className="relative w-full max-w-md rounded-3xl shadow-2xl overflow-hidden ring-1 ring-white/30">
+              <img
+                src="https://cdn.dribbble.com/userupload/15526773/file/original-03a0f1267c918df1cd98b8d8c972404e.jpg?resize=752x&vertical=center"
+                alt="hero visual"
+                className="w-full h-full object-cover"
+              />
+
+              {/* cosmetic floating cards */}
+              <div className="absolute -left-6 -bottom-6 w-44 bg-white rounded-2xl p-3 shadow-xl border border-gray-100">
+                <div className="text-xs text-gray-500">Featured</div>
+                <div className="font-semibold mt-2">Stylish Lamp</div>
+                <div className="text-blue-600 font-bold mt-1">₹2,399</div>
+              </div>
+
+              <div className="absolute -right-6 top-6 w-36 bg-white rounded-2xl p-3 shadow-xl border border-gray-100">
+                <div className="text-sm font-semibold">New</div>
+                <div className="text-xs text-gray-500">Mini Planter</div>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
-      
-     {/* WHY CHOOSE US SECTION */}
-<section className="py-24 px-8 md:px-16 bg-gradient-to-br from-blue-50 to-white">
-  <motion.h1
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.6 }}
-    viewport={{ once: true }}
-    className="text-4xl font-extrabold text-center mb-14 text-gray-800"
-  >
-    Why Choose <span className="text-blue-600">ShopEase?</span>
-  </motion.h1>
 
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 max-w-7xl mx-auto">
-
-    {[
-      {
-        icon: Truck,
-        title: "Fast Delivery",
-        desc: "Get your orders delivered quickly and safely to your doorstep."
-      },
-      {
-        icon: ShieldCheck,
-        title: "Secure Payments",
-        desc: "Shop confidently with encrypted and protected payments."
-      },
-      {
-        icon: Star,
-        title: "Premium Quality",
-        desc: "Only the best, hand-picked products curated for you."
-      },
-      {
-        icon: Headphones,
-        title: "24/7 Support",
-        desc: "A friendly support team always ready to assist you."
-      }
-    ].map((card, index) => {
-      const Icon = card.icon;
-      return (
-        <motion.div
-          key={index}
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: index * 0.15 }}
-          viewport={{ once: true }}
-          className="group bg-white/80 backdrop-blur-md border border-gray-100 
-          shadow-lg hover:shadow-2xl rounded-3xl p-8 text-center cursor-pointer
-          transition-all duration-300 hover:-translate-y-2"
-        >
-          <div className="flex justify-center mb-5">
-            <div className="p-4 rounded-full bg-blue-100 group-hover:bg-blue-600 transition-all duration-300">
-              <Icon className="w-8 h-8 text-blue-600 group-hover:text-white transition-all duration-300" />
-            </div>
+      {/* SHOP BY CATEGORY */}
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl font-bold text-gray-900">Shop by Category</h2>
+            <Link to="/categories" className="text-sm text-blue-600 hover:underline">
+              See all categories
+            </Link>
           </div>
 
-          <h3 className="text-xl font-bold text-gray-800 mb-2">{card.title}</h3>
-          <p className="text-gray-600 text-sm leading-relaxed">{card.desc}</p>
-        </motion.div>
-      );
-    })}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+            {categories.length === 0 ? (
+              Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="animate-pulse bg-white rounded-2xl p-6 h-40 shadow-sm" />
+              ))
+            ) : (
+              categories.map((cat) => (
+                <button
+                  key={cat._id}
+                  onClick={() => navigate(`/category/${cat._id}`)}
+                  className="group bg-white rounded-2xl p-4 flex flex-col items-center text-center hover:shadow-2xl transition transform hover:-translate-y-1"
+                >
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center mb-3 overflow-hidden">
+                    <img src={cat.image} alt={cat.name} className="w-full h-full object-cover" />
+                  </div>
+                  <div className="text-sm font-medium text-gray-800">{cat.name}</div>
+                </button>
+              ))
+            )}
+          </div>
+        </div>
+      </section>
 
-  </div>
-</section>
+      {/* FEATURED PRODUCTS */}
+      <section className="py-16 bg-[#f7fafc]">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl font-bold text-gray-900">Featured Products</h2>
+            <Link to="/products" className="text-sm text-blue-600 hover:underline">
+              View all
+            </Link>
+          </div>
 
-{/* 🌟 Brand Story Section */}
-<section className="py-20 px-6 md:px-16 bg-white">
-  <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-    
-    {/* Image */}
-    <motion.img
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-      src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f"
-      alt="Our Story"
-      className="rounded-2xl shadow-lg object-cover h-96 w-full"
-    />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {featured.length === 0 ? (
+              Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="animate-pulse bg-white rounded-3xl p-6 h-80 shadow-sm" />
+              ))
+            ) : (
+              featured.map((p) => (
+                <motion.div
+                  key={p._id}
+                  whileHover={{ scale: 1.02 }}
+                  className="relative bg-white rounded-3xl p-6 shadow-md hover:shadow-2xl transition cursor-pointer flex flex-col"
+                  onClick={() => navigate(`/details/${p._id}`)}
+                >
+                  <div className="w-full h-56 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center">
+                    <img src={p.image} alt={p.title} className="object-contain w-full h-full" />
+                  </div>
 
-    {/* Text */}
-    <motion.div
-      initial={{ opacity: 0, x: 40 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.6 }}
-      className="space-y-6"
-    >
-      <h2 className="text-4xl font-bold text-gray-800 leading-tight">
-        ShopEase: Our Story
-      </h2>
+                  <div className="mt-4 flex-1">
+                    <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">{p.title}</h3>
+                    <p className="text-blue-600 font-bold text-xl mt-2">₹ {p.price}</p>
+                  </div>
 
-      <p className="text-gray-600 text-lg">
-        We started with a simple belief — **quality should be accessible**.
-        Every product we create is crafted with intention, detail, and passion.
-      </p>
+                  <div className="mt-4 flex gap-3">
+                    <button className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 rounded-full font-medium shadow-sm">
+                      View
+                    </button>
+                    <button className="w-12 h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center shadow-sm" title="Add to wishlist">
+                      ❤
+                    </button>
+                  </div>
+                </motion.div>
+              ))
+            )}
+          </div>
+        </div>
+      </section>
 
-      <p className="text-gray-600 text-lg">
-        From day one, our mission has been to bring **modern designs**, 
-        **trusted quality**, and a **seamless shopping experience** to every customer.
-      </p>
+      {/* WHY CHOOSE US */}
+      <section className="py-24">
+        <div className="max-w-7xl mx-auto px-6">
+          <motion.h2
+            initial={{ opacity: 0, y: 8 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-4xl font-extrabold text-gray-900 text-center mb-10"
+          >
+            Why Choose <span className="text-blue-600">ShopEase</span>
+          </motion.h2>
 
-      <p className="text-gray-700 font-semibold text-xl">
-        Crafted with care. Built for you.
-      </p>
-    </motion.div>
-  
-  </div>
-</section>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {[
+              { icon: Truck, title: "Fast Delivery", desc: "Get your orders delivered quickly and safely." },
+              { icon: ShieldCheck, title: "Secure Payments", desc: "Encrypted and trusted checkout." },
+              { icon: Star, title: "Premium Quality", desc: "Only top-rated, handpicked items." },
+              { icon: Headphones, title: "24/7 Support", desc: "We are here when you need us." },
+            ].map((card, idx) => {
+              const Icon = card.icon;
+              return (
+                <motion.div
+                  key={idx}
+                  whileHover={{ translateY: -6 }}
+                  className="bg-white rounded-2xl p-6 shadow hover:shadow-2xl transition flex flex-col items-center text-center"
+                >
+                  <div className="p-3 rounded-full bg-gradient-to-br from-blue-50 to-indigo-50 mb-4">
+                    <Icon className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <h3 className="font-semibold text-lg">{card.title}</h3>
+                  <p className="text-sm text-gray-500 mt-2">{card.desc}</p>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
 
-{/* 🌙 Premium Footer */}
-<footer className="bg-gray-900 text-gray-300 py-16 px-10 md:px-20">
-  <div className="max-w-6xl mx-auto grid md:grid-cols-4 gap-10">
+      {/* BRAND STORY */}
+      <section className="py-20 bg-white">
+        <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+          <motion.img
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=1200&q=80"
+            alt="Our Story"
+            className="rounded-3xl shadow-xl object-cover w-full h-96"
+          />
 
-    {/* Brand */}
-    <div>
-      <h1 className="text-2xl font-bold text-white mb-4">ShopEase</h1>
-      <p className="text-gray-400 leading-relaxed">
-        Bringing you thoughtfully designed products  
-        that redefine everyday living.
-      </p>
-    </div>
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            className="space-y-6"
+          >
+            <div className="text-sm text-blue-600 font-medium">Our Story</div>
+            <h2 className="text-4xl font-bold text-gray-900">ShopEase: Crafted for daily delight</h2>
+            <p className="text-gray-600 text-lg">
+              We started with a simple belief — quality should be accessible. Every product we create is crafted with intention, detail, and passion.
+            </p>
+            <p className="text-gray-600">
+              From design to delivery, our mission is to bring modern, trusted products and an effortless shopping experience to everyone.
+            </p>
+            <div className="mt-4">
+              <Link to="/about" className="inline-block bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-3 rounded-full shadow-md">Read more</Link>
+            </div>
+          </motion.div>
+        </div>
+      </section>
 
-    {/* Links */}
-    <div>
-      <h3 className="text-lg font-semibold text-white mb-4">Quick Links</h3>
-      <ul className="space-y-3">
-        <li className="hover:text-white cursor-pointer transition">Home</li>
-        <li className="hover:text-white cursor-pointer transition">Shop</li>
-        <li className="hover:text-white cursor-pointer transition">Categories</li>
-        <li className="hover:text-white cursor-pointer transition">Contact</li>
-      </ul>
-    </div>
+      {/* FOOTER */}
+      <footer className="bg-gray-900 text-gray-300">
+        <div className="max-w-7xl mx-auto px-6 py-16 grid md:grid-cols-4 gap-8">
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold">SE</div>
+              <div className="text-white font-semibold">ShopEase</div>
+            </div>
+            <p className="text-gray-400">Bringing thoughtfully designed products that redefine everyday living.</p>
+          </div>
 
-    {/* Support */}
-    <div>
-      <h3 className="text-lg font-semibold text-white mb-4">Support</h3>
-      <ul className="space-y-3">
-        <li className="hover:text-white cursor-pointer transition">FAQs</li>
-        <li className="hover:text-white cursor-pointer transition">Shipping</li>
-        <li className="hover:text-white cursor-pointer transition">Returns</li>
-        <li className="hover:text-white cursor-pointer transition">Privacy Policy</li>
-      </ul>
-    </div>
+          <div>
+            <h4 className="text-white font-semibold mb-3">Quick Links</h4>
+            <ul className="space-y-2 text-gray-400">
+              <li className="cursor-pointer hover:text-white">Home</li>
+              <li className="cursor-pointer hover:text-white">Shop</li>
+              <li className="cursor-pointer hover:text-white">Categories</li>
+              <li className="cursor-pointer hover:text-white">Contact</li>
+            </ul>
+          </div>
 
-    {/* Newsletter */}
-    <div>
-      <h3 className="text-lg font-semibold text-white mb-4">Stay Updated</h3>
-      <p className="text-gray-400 mb-3">
-        Subscribe to receive updates, new launches & offers.
-      </p>
+          <div>
+            <h4 className="text-white font-semibold mb-3">Support</h4>
+            <ul className="space-y-2 text-gray-400">
+              <li className="cursor-pointer hover:text-white">FAQs</li>
+              <li className="cursor-pointer hover:text-white">Shipping</li>
+              <li className="cursor-pointer hover:text-white">Returns</li>
+              <li className="cursor-pointer hover:text-white">Privacy</li>
+            </ul>
+          </div>
 
-      <div className="flex items-center">
-        <input
-          type="email"
-          placeholder="Enter your email"
-          className="w-full px-4 py-2 rounded-l-lg focus:outline-none text-gray-800"
-        />
-        <button className="bg-blue-600 px-4 py-2 rounded-r-lg text-white font-semibold hover:bg-blue-700 transition">
-          Join
-        </button>
-      </div>
-    </div>
+          <div>
+            <h4 className="text-white font-semibold mb-3">Stay Updated</h4>
+            <p className="text-gray-400 mb-3">Subscribe to receive updates, launches & offers.</p>
+            <div className="flex">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="w-full px-4 py-2 rounded-l-lg focus:outline-none text-gray-800"
+              />
+              <button className="bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 rounded-r-lg text-white font-semibold">Join</button>
+            </div>
+          </div>
+        </div>
 
-  </div>
-
-  <div className="text-center text-gray-500 mt-12 border-t border-gray-700 pt-6">
-    © {new Date().getFullYear()} YourBrand · All Rights Reserved.
-  </div>
-</footer>
-
-
-
+        <div className="border-t border-gray-800 text-center py-6 text-gray-500">
+          © {new Date().getFullYear()} ShopEase · All Rights Reserved.
+        </div>
+      </footer>
     </div>
   );
 }
-
-
-
