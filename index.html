@@ -2,12 +2,106 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0d6efd" />
+    <meta name="color-scheme" content="light dark" />
+
+    <title>ShopEase - Modern Ecommerce Store</title>
+    <meta name="description" content="ShopEase: Discover high-quality products and exclusive deals." />
+
+    <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ecommerce</title>
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="/src/index.css" />
+
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        margin: 0;
+        background: #f0f9ff;
+        color: #1f2937;
+      }
+
+      #root {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 0rem 0rem; /* clean, simple spacing */
+        text-align: center;
+      }
+
+      .loading-text {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2563eb;
+        animation: pulse 1.5s infinite;
+      }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.4; }
+      }
+
+      .hero-preview {
+        margin-top: 2rem;
+        max-width: 500px;
+        width: 100%;
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        transform: translateY(20px);
+        opacity: 0;
+        animation: fadeUp 1s forwards;
+        animation-delay: 0.5s;
+      }
+
+      .hero-preview img {
+        width: 100%;
+        display: block;
+      }
+
+      @keyframes fadeUp {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .hero-preview h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #1e40af;
+        margin-bottom: 0.5rem;
+      }
+
+      .hero-preview p {
+        font-size: 1rem;
+        color: #4b5563;
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="loading-text">Loading ShopEase…</div>
+
+      <!-- Hero Preview (optional) -->
+      <div class="hero-preview">
+        <h1>Welcome to <span style="color:#2563eb">ShopEase</span></h1>
+        <p>Discover high-quality products and exclusive deals — all in one place!</p>
+        <img src="/shopEase.png" alt="ShopEase Hero Preview" />
+      </div>
+    </div>
+
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

@@ -11,14 +11,19 @@ function Table() {
   const [form, setForm] = useState({
     title: "",
     price: "",
+    // image holds either a string (existing image path) or a File (new upload)
     image: "",
     category: "",
+    description: "",
   });
+
+  const [previewUrl, setPreviewUrl] = useState(null); // preview for newly selected file
 
   const API_URL = "http://localhost:8080/api/products";
   const CATEGORY_URL = "http://localhost:8080/api/categories";
+  const BACKEND_BASE = "http://localhost:8080";
 
-  // Fetch Categories
+  // ---------- Fetch Categories ----------
   const fetchCategories = async () => {
     try {
       const res = await fetch(CATEGORY_URL);
@@ -30,7 +35,7 @@ function Table() {
     }
   };
 
-  // Fetch Products
+  // ---------- Fetch Products ----------
   const fetchProducts = async () => {
     try {
       const res = await fetch(API_URL);
@@ -47,84 +52,150 @@ function Table() {
     fetchProducts();
   }, []);
 
-  // Handle Input Change
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  // ---------- Helpers ----------
+  const getImageUrl = (img) => {
+    if (!img) return null;
+    if (typeof img === "string") {
+      if (img.startsWith("http://") || img.startsWith("https://")) return img;
+      if (img.startsWith("/")) return `${BACKEND_BASE}${img}`;
+      return `${BACKEND_BASE}/uploads/${img}`;
+    }
+    // if it's a File object, create preview
+    return previewUrl;
   };
 
-  // Add / Update Product
+  // ---------- Input handlers ----------
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+
+    if (name === "image") {
+      const file = files && files[0];
+      if (file) {
+        setForm((prev) => ({ ...prev, image: file }));
+        const url = URL.createObjectURL(file);
+        setPreviewUrl(url);
+      } else {
+        // cleared file input
+        setForm((prev) => ({ ...prev, image: "" }));
+        setPreviewUrl(null);
+      }
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  // ---------- Reset form ----------
+  const resetForm = () => {
+    setForm({ title: "", price: "", image: "", category: "", description: "" });
+    setEditingId(null);
+    setPreviewUrl(null);
+  };
+
+  // ---------- Submit (Add / Update) ----------
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.title || !form.price || !form.image || !form.category) {
-      alert("Please fill all fields");
+    // basic validation
+    if (!form.title || !form.price || !form.category) {
+      alert("Please fill title, price and category");
       return;
     }
 
     setLoading(true);
 
     try {
+      // Determine whether to send FormData (if image is File) or JSON
+      const isFile = form.image instanceof File;
+
+      let res;
       if (editingId) {
-        // UPDATE PRODUCT
-        const res = await fetch(`${API_URL}/${editingId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        });
+        // UPDATE
+        if (isFile) {
+          const fd = new FormData();
+          fd.append("title", form.title);
+          fd.append("price", form.price);
+          fd.append("category", form.category);
+          fd.append("description", form.description || "");
+          fd.append("image", form.image); // file
 
-        if (!res.ok) throw new Error("Failed to update product");
-        const updated = await res.json();
-
-        setProducts(
-          products.map((p) =>
-            p._id === editingId ? updated.product || updated : p
-          )
-        );
-
-        alert("Product updated successfully");
-        setEditingId(null);
+          res = await fetch(`${API_URL}/${editingId}`, {
+            method: "PUT",
+            body: fd, // NO headers
+          });
+        } else {
+          // No new file chosen — send JSON and keep existing image on server
+          res = await fetch(`${API_URL}/${editingId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              title: form.title,
+              price: form.price,
+              category: form.category,
+              description: form.description || "",
+              image: typeof form.image === "string" ? form.image : "",
+            }),
+          });
+        }
       } else {
-        // ADD PRODUCT
-        const res = await fetch(API_URL, {
+        // CREATE
+        const fd = new FormData();
+        fd.append("title", form.title);
+        fd.append("price", form.price);
+        fd.append("category", form.category);
+        fd.append("description", form.description || "");
+        if (isFile) fd.append("image", form.image);
+
+        res = await fetch(API_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
+          body: fd, // NO headers
         });
+      }
 
-        if (!res.ok) throw new Error("Failed to add product");
+      if (!res.ok) {
+        const text = await res.text().catch(() => null);
+        throw new Error(text || "Failed to save product");
+      }
 
-        const data = await res.json();
-        setProducts([...products, data.product || data]);
+      const saved = await res.json();
+
+      if (editingId) {
+        // update local list
+        setProducts((prev) => prev.map((p) => (p._id === editingId ? saved : p)));
+        alert("Product updated successfully");
+      } else {
+        setProducts((prev) => [...prev, saved]);
         alert("Product added successfully");
       }
 
-      setForm({ title: "", price: "", image: "", category: "" });
+      resetForm();
     } catch (error) {
-      console.error("Error:", error);
-      alert("Something went wrong");
+      console.error("Error saving product:", error);
+      alert("Error saving product");
     } finally {
       setLoading(false);
     }
   };
 
-  // Load product details for editing
+  // ---------- Start editing ----------
   const startEditing = (product) => {
     setEditingId(product._id);
     setForm({
-      title: product.title,
-      price: product.price,
-      image: product.image,
+      title: product.title || "",
+      price: product.price || "",
+      image: product.image || "", // keep as string path until user uploads new file
       category: product.category?._id || "",
+      description: product.description || "",
     });
+    setPreviewUrl(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Cancel Editing
+  // ---------- Cancel edit ----------
   const cancelEdit = () => {
-    setEditingId(null);
-    setForm({ title: "", price: "", image: "", category: "" });
+    resetForm();
   };
 
-  // Delete Product
+  // ---------- Delete ----------
   const deleteProduct = async (id) => {
     const confirmDelete = window.confirm("Are you sure?");
     if (!confirmDelete) return;
@@ -132,20 +203,17 @@ function Table() {
     try {
       const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to delete product");
-
-      setProducts(products.filter((p) => p._id !== id));
+      setProducts((prev) => prev.filter((p) => p._id !== id));
       alert("Product deleted");
     } catch (error) {
-      console.error("Error deleting:", error);
-      alert("Error deleting");
+      console.error("Error deleting product:", error);
+      alert("Error deleting product");
     }
   };
 
   return (
     <div className="w-full min-h-screen bg-gray-100 flex flex-col items-center py-10">
-      <h1 className="text-2xl font-semibold text-gray-600 mb-4">
-        Product Manager
-      </h1>
+      <h1 className="text-2xl font-semibold text-gray-600 mb-4">Product Manager</h1>
 
       {/* Add / Edit Form */}
       <form
@@ -173,14 +241,36 @@ function Table() {
             onChange={handleChange}
             className="border rounded-md px-4 py-2"
           />
-          <input
-            type="text"
-            name="image"
-            placeholder="Image URL"
-            value={form.image}
-            onChange={handleChange}
-            className="border rounded-md px-4 py-2"
-          />
+
+          {/* File input now */}
+          <div>
+            <input
+              type="file"
+              name="image"
+              accept="image/*"
+              onChange={handleChange}
+              className="border rounded-md px-4 py-2 w-full"
+            />
+            <div className="mt-2">
+              {previewUrl ? (
+                <img
+                  src={previewUrl}
+                  alt="Preview"
+                  className="w-24 h-24 object-contain rounded-md border"
+                />
+              ) : form.image ? (
+                <img
+                  src={getImageUrl(form.image)}
+                  alt="Existing"
+                  className="w-24 h-24 object-contain rounded-md border"
+                />
+              ) : (
+                <div className="w-24 h-24 flex items-center justify-center border rounded-md text-sm text-gray-400">
+                  No Image
+                </div>
+              )}
+            </div>
+          </div>
 
           <select
             name="category"
@@ -192,11 +282,22 @@ function Table() {
               Select Category
             </option>
             {categories.map((cat) => (
-              <option key={cat._id} value={cat._id}>
+              <option key={cat._id} value={cat._1d ?? cat._id}>
                 {cat.name}
               </option>
             ))}
           </select>
+        </div>
+
+        <div className="mt-4">
+          <textarea
+            name="description"
+            placeholder="Description (optional)"
+            value={form.description}
+            onChange={handleChange}
+            className="border rounded-md px-4 py-2 w-full"
+            rows={3}
+          />
         </div>
 
         <div className="flex gap-4 mt-5">
@@ -205,13 +306,7 @@ function Table() {
             disabled={loading}
             className="bg-indigo-600 text-white px-6 py-2 rounded-md"
           >
-            {loading
-              ? editingId
-                ? "Updating..."
-                : "Adding..."
-              : editingId
-              ? "Update Product"
-              : "Add Product"}
+            {loading ? (editingId ? "Updating..." : "Adding...") : editingId ? "Update Product" : "Add Product"}
           </button>
 
           {editingId && (
@@ -247,11 +342,17 @@ function Table() {
                   <td className="px-4 py-3 text-center">{index + 1}</td>
 
                   <td className="px-4 py-3 text-center">
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="w-14 h-14 object-contain rounded-md border mx-auto"
-                    />
+                    {item.image ? (
+                      <img
+                        src={getImageUrl(item.image)}
+                        alt={item.title}
+                        className="w-14 h-14 object-contain rounded-md border mx-auto"
+                      />
+                    ) : (
+                      <div className="w-14 h-14 flex items-center justify-center border rounded-md text-xs text-gray-400 mx-auto">
+                        No Image
+                      </div>
+                    )}
                   </td>
 
                   <td className="px-4 py-3">{item.title}</td>

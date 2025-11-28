@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ShoppingCart, Search, LogIn } from "lucide-react";
+import AddToCart from "./AddToCartButton.jsx";
+
 
 function Navbar() {
   const navigate = useNavigate();
@@ -158,14 +160,18 @@ function Navbar() {
           About
         </Link>
 
+      
+
         {/* Cart */}
+       
         <button
           onClick={() => navigate("/cart")}
           className="
             flex items-center gap-2 
-            bg-yellow-400 text-black 
-            hover:bg-yellow-300 
-            px-4 py-2 
+            border border-yellow-300 
+            text-yellow-300
+            hover:bg-yellow-300 hover:text-black
+            px-4 py-2
             rounded-full
             font-semibold 
             shadow-md 
@@ -173,7 +179,7 @@ function Navbar() {
           "
         >
           <ShoppingCart size={18} /> Cart
-        </button>
+        </button> 
 
         {/* Login */}
         <button

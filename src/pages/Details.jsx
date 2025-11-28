@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import RelatedProducts from "../components/RelatedProducts";
+import AddToCartButton from "../components/AddToCartButton";
+
 
 function Details() {
   const [product, setProduct] = useState({});
@@ -71,7 +73,7 @@ function Details() {
         {/* Image */}
         <div className="flex justify-center items-center bg-gray-100 p-6">
           <img
-            src={product.image}
+            src={`http://localhost:8080/${product.image}`}
             alt={product.title}
             className="w-full h-80 object-contain hover:scale-105 transition-transform duration-500"
           />
@@ -104,9 +106,9 @@ function Details() {
           </p>
 
           <div className="flex gap-4 mt-6">
-            <button className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition w-[180px]">
-              Add to Cart
-            </button>
+
+          <AddToCartButton product={product} />
+
 
             <Link
               to="/products"

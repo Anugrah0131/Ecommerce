@@ -6,12 +6,17 @@ function CategoryTable() {
   const [form, setForm] = useState({
     name: "",
     description: "",
+    // image is the existing image path (string) from backend, e.g. "/uploads/abc.jpg"
     image: "",
+    // imageFile is the File object selected by user (for new upload)
+    imageFile: null,
   });
   const [loading, setLoading] = useState(false);
-  const [editingId, setEditingId] = useState(null); // ⭐ Track which category is being edited
+  const [editingId, setEditingId] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null); // preview for newly selected file
 
   const API_URL = "http://localhost:8080/api/categories";
+  const BACKEND_BASE = "http://localhost:8080"; // used to prefix image paths returned from backend
 
   // Fetch categories
   const fetchCategories = async () => {
@@ -28,17 +33,41 @@ function CategoryTable() {
     fetchCategories();
   }, []);
 
-  // Handle input change
+  // Generic text input change
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // File input change (store file and create preview)
+  const handleFileChange = (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) {
+      // user cleared file input
+      setForm((prev) => ({ ...prev, imageFile: null }));
+      setPreviewUrl(null);
+      return;
+    }
+
+    setForm((prev) => ({ ...prev, imageFile: file }));
+    // create temporary preview URL
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+  };
+
+  // Reset form helper
+  const resetForm = () => {
+    setForm({ name: "", description: "", image: "", imageFile: null });
+    setPreviewUrl(null);
+    setEditingId(null);
   };
 
   // Submit for Add + Update
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.name || !form.description || !form.image) {
-      alert("Please fill all fields");
+    if (!form.name || !form.description) {
+      alert("Please fill name and description");
       return;
     }
 
@@ -48,42 +77,77 @@ function CategoryTable() {
       let res;
 
       if (editingId) {
-        // ⭐ UPDATE EXISTING CATEGORY
-        res = await fetch(`${API_URL}/${editingId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        });
+        // UPDATE
+        // If user picked a new file -> send FormData (so backend can accept and replace)
+        if (form.imageFile) {
+          const formData = new FormData();
+          formData.append("name", form.name);
+          formData.append("description", form.description);
+          formData.append("image", form.imageFile); // field name must match upload.single("image")
+
+          res = await fetch(`${API_URL}/${editingId}`, {
+            method: "PUT",
+            body: formData,
+          });
+        } else {
+          // No new file chosen -> send JSON to preserve existing image on backend
+          // Backend PUT handler should accept JSON and update fields without touching the image
+          res = await fetch(`${API_URL}/${editingId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: form.name,
+              description: form.description,
+              // optionally include image path so backend keeps it unchanged
+              image: form.image,
+            }),
+          });
+        }
       } else {
-        // ⭐ ADD NEW CATEGORY
+        // CREATE NEW CATEGORY (always use FormData so image upload works)
+        const formData = new FormData();
+        formData.append("name", form.name);
+        formData.append("description", form.description);
+
+        if (form.imageFile) {
+          formData.append("image", form.imageFile);
+        } else {
+          // no file chosen: if you want to require image, alert
+          // otherwise allow creating category without image
+          // here we allow creating without image
+        }
+
         res = await fetch(API_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
+          body: formData,
         });
       }
 
       if (!res.ok) throw new Error("Failed to save category");
 
-      setForm({ name: "", description: "", image: "" });
-      setEditingId(null); // Reset edit mode
-      fetchCategories(); // Reload list
+      // success -> refresh list and reset
+      await fetchCategories();
+      resetForm();
     } catch (error) {
       console.error("Error saving category:", error);
       alert("Error saving category");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
-  // ⭐ Load category into form for editing
+  // Load category into form for editing
   const editCategory = (cat) => {
     setForm({
-      name: cat.name,
-      description: cat.description,
-      image: cat.image,
+      name: cat.name || "",
+      description: cat.description || "",
+      image: cat.image || "", // server returns path like "/uploads/file.jpg" or a full URL
+      imageFile: null,
     });
+    setPreviewUrl(null); // clear file preview (show existing image from server instead)
     setEditingId(cat._id);
+    // scroll to form or focus if needed
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // Delete category
@@ -92,9 +156,8 @@ function CategoryTable() {
 
     try {
       const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-
       if (res.ok) {
-        setCategories(categories.filter((c) => c._id !== id));
+        setCategories((prev) => prev.filter((c) => c._id !== id));
       } else {
         alert("Failed to delete category");
       }
@@ -103,12 +166,23 @@ function CategoryTable() {
     }
   };
 
+  // Helper to compute image URL to display
+  const getImageUrl = (item) => {
+    if (!item) return null;
+
+    // If item.image is already a full URL (starts with http), use it
+    if (item.startsWith("http://") || item.startsWith("https://")) return item;
+
+    // If it starts with '/', prefix the backend host
+    if (item.startsWith("/")) return `${BACKEND_BASE}${item}`;
+
+    // Otherwise, assume it's a filename in uploads
+    return `${BACKEND_BASE}/uploads/${item}`;
+  };
+
   return (
     <div className="w-full min-h-screen bg-gray-100 flex flex-col items-center py-10">
-
-      <h1 className="text-2xl font-semibold text-gray-600 mb-4">
-        Category Manager
-      </h1>
+      <h1 className="text-2xl font-semibold text-gray-600 mb-4">Category Manager</h1>
 
       {/* Form */}
       <form
@@ -128,6 +202,7 @@ function CategoryTable() {
             onChange={handleChange}
             className="border rounded-md px-4 py-2 focus:ring-2 focus:ring-indigo-400"
           />
+
           <input
             type="text"
             name="description"
@@ -136,42 +211,58 @@ function CategoryTable() {
             onChange={handleChange}
             className="border rounded-md px-4 py-2 focus:ring-2 focus:ring-indigo-400"
           />
-          <input
-            type="text"
-            name="image"
-            placeholder="Image URL"
-            value={form.image}
-            onChange={handleChange}
-            className="border rounded-md px-4 py-2 focus:ring-2 focus:ring-indigo-400"
-          />
+
+          <div className="flex flex-col">
+            <input
+              type="file"
+              name="image"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="border rounded-md px-4 py-2 focus:ring-2 focus:ring-indigo-400"
+            />
+
+            {/* Preview area */}
+            <div className="mt-3">
+              {previewUrl ? (
+                <img
+                  src={previewUrl}
+                  alt="Preview"
+                  className="w-24 h-24 object-contain rounded-md border"
+                />
+              ) : form.image ? (
+                <img
+                  src={getImageUrl(form.image)}
+                  alt="Existing"
+                  className="w-24 h-24 object-contain rounded-md border"
+                />
+              ) : (
+                <div className="w-24 h-24 flex items-center justify-center border rounded-md text-sm text-gray-400">
+                  No Image
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="mt-5 bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 transition-colors disabled:bg-gray-400"
-        >
-          {loading
-            ? editingId
-              ? "Updating..."
-              : "Adding..."
-            : editingId
-            ? "Update Category"
-            : "Add Category"}
-        </button>
-
-        {editingId && (
+        <div className="mt-5 flex items-center">
           <button
-            onClick={() => {
-              setEditingId(null);
-              setForm({ name: "", description: "", image: "" });
-            }}
-            type="button"
-            className="ml-4 text-gray-600 underline"
+            type="submit"
+            disabled={loading}
+            className="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 transition-colors disabled:bg-gray-400"
           >
-            Cancel Edit
+            {loading ? (editingId ? "Updating..." : "Adding...") : editingId ? "Update Category" : "Add Category"}
           </button>
-        )}
+
+          {editingId && (
+            <button
+              onClick={() => resetForm()}
+              type="button"
+              className="ml-4 text-gray-600 underline"
+            >
+              Cancel Edit
+            </button>
+          )}
+        </div>
       </form>
 
       {/* Category Table */}
@@ -197,23 +288,24 @@ function CategoryTable() {
                   <td className="px-4 py-3 text-center">{index + 1}</td>
 
                   <td className="px-4 py-3 text-center">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-14 h-14 object-contain rounded-md border mx-auto"
-                    />
+                    {item.image ? (
+                      <img
+                        src={getImageUrl(item.image)}
+                        alt={item.name}
+                        className="w-14 h-14 object-contain rounded-md border mx-auto"
+                      />
+                    ) : (
+                      <div className="w-14 h-14 flex items-center justify-center border rounded-md text-xs text-gray-400 mx-auto">
+                        No Image
+                      </div>
+                    )}
                   </td>
 
-                  <td className="px-4 py-3 font-medium text-gray-800">
-                    {item.name}
-                  </td>
+                  <td className="px-4 py-3 font-medium text-gray-800">{item.name}</td>
 
-                  <td className="px-4 py-3 text-gray-600">
-                    {item.description}
-                  </td>
+                  <td className="px-4 py-3 text-gray-600">{item.description}</td>
 
                   <td className="px-4 py-3 text-center flex gap-4 justify-center">
-                    {/* ⭐ EDIT BUTTON */}
                     <button
                       onClick={() => editCategory(item)}
                       className="text-blue-600 hover:text-blue-800 font-medium"
@@ -221,7 +313,6 @@ function CategoryTable() {
                       Edit
                     </button>
 
-                    {/* DELETE */}
                     <button
                       onClick={() => deleteCategory(item._id)}
                       className="text-red-500 hover:text-red-700 text-2xl"
@@ -233,10 +324,7 @@ function CategoryTable() {
               ))
             ) : (
               <tr>
-                <td
-                  colSpan="5"
-                  className="text-center py-6 text-gray-500 font-medium"
-                >
+                <td colSpan="5" className="text-center py-6 text-gray-500 font-medium">
                   No Categories Found
                 </td>
               </tr>
