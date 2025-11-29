@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ShoppingCart } from "lucide-react";
 
-export default function AddToCart({ product }) {
+export default function AddToCartButton({ product, className }) {
   const [cart, setCart] = useState([]);
 
   useEffect(() => {
@@ -43,14 +43,15 @@ export default function AddToCart({ product }) {
       <motion.button
         whileTap={{ scale: 0.95 }}
         onClick={addToCart}
-        className="
+        className={`
           w-full flex items-center justify-center gap-2
           bg-gradient-to-r from-yellow-400 to-yellow-500
           hover:from-yellow-500 hover:to-yellow-400
           text-black font-semibold
           px-4 py-3 rounded-2xl shadow-md hover:shadow-lg
           transition-all duration-300
-        "
+          ${className || ""}
+        `}
       >
         <ShoppingCart size={18} />
         Add to Cart

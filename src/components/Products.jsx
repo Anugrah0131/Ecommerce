@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Card from "./Card"; 
 
-
 function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,7 +24,7 @@ function Products() {
 
   if (loading)
     return (
-      <div className="min-h-screen flex justify-center items-center text-gray-500">
+      <div className="min-h-screen flex justify-center items-center text-gray-500 bg-gray-50">
         Loading products...
       </div>
     );
@@ -33,7 +32,7 @@ function Products() {
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
     
-      {/* Hero */}
+      {/* Hero Section */}
       <section className="py-16 bg-gradient-to-r from-blue-50 to-blue-100">
         <h1 className="text-4xl md:text-5xl font-extrabold text-center text-gray-800 drop-shadow-md">
           All Products
@@ -44,14 +43,14 @@ function Products() {
       </section>
 
       {/* Products Grid */}
-      <section className="max-w-7xl mx-auto p-6">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {products.length === 0 ? (
           <p className="text-center text-gray-500 text-lg mt-10">
             No products found.
           </p>
         ) : (
           <motion.div
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center"
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-10 justify-items-center"
             initial="hidden"
             animate="visible"
             variants={{
@@ -66,6 +65,9 @@ function Products() {
             {products.map((p) => (
               <motion.div
                 key={p._id}
+                whileHover={{ y: -5, scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                className="hover:shadow-xl hover:shadow-purple-300/30 rounded-3xl"
                 variants={{
                   hidden: { opacity: 0, y: 20 },
                   visible: { opacity: 1, y: 0 },
@@ -77,6 +79,7 @@ function Products() {
                   price={p.price}
                   image={p.image}
                   category={p.category?.name}
+                  badge={p.badge}
                 />
               </motion.div>
             ))}

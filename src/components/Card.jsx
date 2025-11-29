@@ -10,58 +10,99 @@ function Card({ id, title, price, image, category, badge }) {
       key={id}
       whileHover={{ scale: 1.03 }}
       transition={{ type: "spring", stiffness: 200, damping: 15 }}
-      className="relative w-64 bg-white backdrop-blur-md/70 rounded-3xl shadow-md hover:shadow-2xl border border-gray-200 overflow-hidden flex flex-col"
+      className="
+        relative w-80 sm:w-96 
+        rounded-3xl 
+        bg-gradient-to-br from-indigo-900/20 via-purple-900/10 to-indigo-900/20
+        backdrop-blur-2xl 
+        border border-white/10 
+        shadow-[0_10px_40px_rgba(0,0,0,0.35)]
+        hover:shadow-purple-500/40 
+        overflow-hidden 
+        flex flex-col 
+        transition-all
+      "
     >
       {/* Wishlist Button */}
       <button
-        className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-white shadow hover:bg-red-500 hover:text-white transition"
+        className="
+          absolute top-4 right-4 
+          w-10 h-10 flex items-center justify-center 
+          rounded-full 
+          bg-white/20 backdrop-blur-md 
+          border border-white/30
+          text-white 
+          hover:bg-red-500 hover:text-white 
+          transition
+        "
         title="Add to wishlist"
       >
-        <Heart className="w-4 h-4" />
+        <Heart className="w-5 h-5" />
       </button>
 
       {/* Badge */}
       {badge && (
-        <span className="absolute top-3 left-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
+        <span className="
+          absolute top-4 left-4 
+          bg-gradient-to-r from-purple-400 to-pink-400 
+          text-black 
+          text-sm font-semibold 
+          px-4 py-1.5 
+          rounded-full 
+          shadow-md
+        ">
           {badge}
         </span>
       )}
 
       {/* Product Image */}
-      <Link to={`/details/${id}`}>
-        <div className="w-full h-56 bg-gray-100 flex items-center justify-center overflow-hidden group">
-          {image ? (
-            <img
-              src={image}
-              alt={title}
-              className="object-contain w-full h-full transition-transform duration-700 group-hover:scale-110"
-            />
-          ) : (
+      <Link to={`/details/${id}`} className="block w-full h-64 overflow-hidden">
+        {image ? (
+          <img
+            src={image}
+            alt={title}
+            className="object-contain w-full h-full transition-transform duration-700 hover:scale-110"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-white/10">
             <span className="text-gray-400 text-sm">No Image</span>
-          )}
-        </div>
+          </div>
+        )}
       </Link>
 
       {/* Product Info */}
-      <div className="p-5 flex flex-col flex-1 justify-between">
+      <div className="p-6 flex flex-col flex-1 justify-between">
         <div className="text-center">
-          <h2 className="text-lg font-bold text-gray-900 truncate">{title}</h2>
-          <p className="text-gray-500 text-sm mt-1">{category}</p>
-          <p className="text-xl font-bold text-blue-600 mt-2">₹{price}</p>
+          <h2 className="text-lg sm:text-xl font-bold text-white truncate">{title}</h2>
+          <p className="text-purple-300 text-sm sm:text-base mt-1">{category}</p>
+          <p className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent mt-2">
+            ₹{price}
+          </p>
         </div>
 
         {/* Buttons */}
-        <div className="mt-4 flex gap-3 justify-center">
+        <div className="mt-5 flex gap-4 justify-center">
           {/* View Button */}
           <Link
             to={`/details/${id}`}
-            className="flex items-center gap-1 px-4 py-2 bg-gray-900 text-white rounded-2xl shadow hover:bg-black transition"
+            className="
+              flex items-center justify-center flex-1 py-3 rounded-2xl
+              bg-gradient-to-r from-pink-500 to-purple-500 
+              text-white font-semibold shadow-xl
+              transition-transform transform hover:scale-105
+            "
           >
-            <Eye className="w-4 h-4" /> View
+            <Eye className="w-5 h-5 mr-2" /> View
           </Link>
 
           {/* Add to Cart */}
-          <AddToCartButton product={{ _id: id, title, price, image, category }} />
+          <AddToCartButton
+            product={{ _id: id, title, price, image, category }}
+            className="
+              flex-1 py-3 rounded-2xl shadow-xl
+              transition-transform transform hover:scale-105
+            "
+          />
         </div>
       </div>
     </motion.div>
