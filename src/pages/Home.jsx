@@ -8,7 +8,6 @@ export default function Home() {
   const [featured, setFeatured] = useState([]);
   const navigate = useNavigate();
 
-  // --- keep your fetch logic exactly the same ---
   const fetchCategories = async () => {
     try {
       const res = await fetch("http://localhost:8080/api/categories");
@@ -35,22 +34,19 @@ export default function Home() {
   useEffect(() => {
     fetchCategories();
     fetchFeaturedProducts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  // --- end original logic ---
 
-  // ---------- SLIDER IMAGES ----------
-  const images = [
-    "/mnt/data/Gemini_Generated_Image_dze9yidze9yidze9.png",
-    "/mnt/data/Gemini_Generated_Image_dze9yidze9yidze9(1).png",
-    "/mnt/data/Gemini_Generated_Image_dze9yidze9yidze9(2).png",
-  ];
+  // ---------- SLIDER IMAGES (UPDATED) ----------
+  const images = Object.values(
+    import.meta.glob("../assets/*.{jpg,jpeg,png,webp}", {
+      eager: true,
+    })
+  ).map((img) => img.default);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const autoRef = useRef(null);
 
   useEffect(() => {
-    // autoplay
     autoRef.current = setTimeout(() => {
       setCurrentIndex((prev) => (prev + 1) % images.length);
     }, 3800);
@@ -73,12 +69,11 @@ export default function Home() {
       {/* HERO — AUTO SLIDER */}
       {/* =============================== */}
       <section className="relative w-full overflow-hidden">
-        {/* floating blobs */}
         <div className="absolute -left-16 -top-8 w-72 h-72 bg-pink-300/30 blur-[130px] rounded-full pointer-events-none" />
         <div className="absolute -right-16 bottom-8 w-96 h-96 bg-purple-300/25 blur-[150px] rounded-full pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto px-6 py-16 md:py-24 lg:py-32 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-          {/* LEFT: Text content over slider (kept visually separated) */}
+          {/* LEFT TEXT */}
           <div className="z-20">
             <motion.span
               initial={{ opacity: 0, y: 8 }}
@@ -119,7 +114,6 @@ export default function Home() {
               >
                 Explore now
               </Link>
-
               <Link
                 to="/categories"
                 className="px-6 py-3 rounded-full border border-gray-300 bg-white/50 backdrop-blur-md shadow-sm hover:bg-white transition"
@@ -128,7 +122,6 @@ export default function Home() {
               </Link>
             </motion.div>
 
-            {/* Trust icons */}
             <div className="grid grid-cols-3 gap-6 max-w-sm mt-8">
               {[
                 { icon: Truck, title: "Fast", sub: "Across India" },
@@ -151,7 +144,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* RIGHT: Slider card */}
+          {/* RIGHT SLIDER */}
           <div className="relative z-10 w-full">
             <div className="relative rounded-3xl overflow-hidden shadow-2xl">
               <AnimatePresence mode="wait">
@@ -171,13 +164,11 @@ export default function Home() {
                 )}
               </AnimatePresence>
 
-              {/* glass overlay for headline on image */}
               <div className="absolute left-6 bottom-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-4 py-3">
                 <div className="text-white font-semibold">ShopEase Picks</div>
                 <div className="text-xs text-white/80">Trendy choices for modern living</div>
               </div>
 
-              {/* arrows */}
               <button
                 onClick={prev}
                 aria-label="previous"
@@ -194,14 +185,14 @@ export default function Home() {
                 <ChevronRight className="w-5 h-5 text-white" />
               </button>
 
-              {/* dots */}
               <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
                 {images.map((_, i) => (
                   <button
                     key={i}
                     onClick={() => setCurrentIndex(i)}
-                    className={`w-3 h-3 rounded-full transition ${currentIndex === i ? "bg-white" : "bg-white/40"}`}
-                    aria-label={`go-to-${i}`}
+                    className={`w-3 h-3 rounded-full transition ${
+                      currentIndex === i ? "bg-white" : "bg-white/40"
+                    }`}
                   />
                 ))}
               </div>
@@ -209,6 +200,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+
 
       {/* ========================= */}
       {/* SHOP BY CATEGORY — GLASS */}

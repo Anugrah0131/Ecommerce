@@ -1,17 +1,11 @@
 import React, { useState } from "react";
-import { Mail, Phone, MapPin, Send, Check } from "lucide-react";
+import { Mail, Phone, MapPin, Send } from "lucide-react";
 import { motion } from "framer-motion";
-
-// Contact.jsx
-// A responsive, accessible contact component styled with Tailwind CSS.
-// - Uses framer-motion for subtle animations
-// - Includes inline client-side validation
-// - Ready to hook up to an API endpoint (/api/contact) or third-party service
 
 export default function Contact() {
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
   const [errors, setErrors] = useState({});
-  const [status, setStatus] = useState("idle"); // idle | sending | success | error
+  const [status, setStatus] = useState("idle");
 
   function validate(values) {
     const e = {};
@@ -31,7 +25,6 @@ export default function Contact() {
 
     setStatus("sending");
     try {
-      // Example: POST to /api/contact. Replace with your backend or service.
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -55,154 +48,167 @@ export default function Contact() {
   }
 
   return (
-    <section className="max-w-6xl mx-auto px-6 py-12 lg:py-20">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
-        {/* Left: Contact card + info */}
-        <motion.aside
-          initial={{ opacity: 0, x: -18 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-          className="bg-gradient-to-br from-white/60 to-slate-50/60 p-8 rounded-2xl shadow-lg border border-gray-100"
+    <div className="w-full min-h-screen bg-[#fafaff] text-gray-800 font-inter">
+      {/* gradient blobs for home.jsx consistency */}
+      <div className="absolute -left-24 -top-20 w-80 h-80 bg-pink-300/30 blur-[140px] rounded-full pointer-events-none" />
+      <div className="absolute -right-24 bottom-20 w-96 h-96 bg-purple-300/25 blur-[150px] rounded-full pointer-events-none" />
+
+      <section className="max-w-6xl mx-auto px-6 py-20 relative z-10">
+        <motion.h1
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-4xl md:text-5xl font-extrabold text-center text-gray-900 mb-14"
         >
-          <h2 className="text-3xl font-extrabold mb-3">Get in touch</h2>
-          <p className="text-slate-600 mb-6">Have a project, question or just want to say hi? Drop a message — I usually reply within 24–48 hours.</p>
+          Contact <span className="text-purple-600">Us</span>
+        </motion.h1>
 
-          <div className="space-y-4">
-            <div className="flex items-start gap-4">
-              <div className="p-3 rounded-xl bg-slate-100/60">
-                <Mail size={20} />
-              </div>
-              <div>
-                <p className="text-sm text-slate-500">Email</p>
-                <p className="font-medium">hello@yourdomain.com</p>
-              </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+          {/* LEFT CARD */}
+          <motion.aside
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            className="bg-white/60 backdrop-blur-lg rounded-3xl shadow-xl border border-white/50 p-10"
+          >
+            <h2 className="text-3xl font-bold mb-4 text-gray-900">Get in touch</h2>
+            <p className="text-gray-600 mb-8">
+              Have any questions or need support? Reach out — we respond within 24 hours.
+            </p>
+
+            <div className="space-y-6">
+              {[
+                { icon: Mail, title: "Email", value: "hello@yourdomain.com" },
+                { icon: Phone, title: "Phone", value: "+91 98765 43210" },
+                { icon: MapPin, title: "Location", value: "Bengaluru, India" },
+              ].map((item, i) => {
+                const Icon = item.icon;
+                return (
+                  <div key={i} className="flex items-start gap-4">
+                    <div className="p-3 rounded-xl bg-gradient-to-br from-pink-50 to-purple-50 shadow-sm border border-white/60">
+                      <Icon className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">{item.title}</p>
+                      <p className="font-medium text-gray-800">{item.value}</p>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
-            <div className="flex items-start gap-4">
-              <div className="p-3 rounded-xl bg-slate-100/60">
-                <Phone size={20} />
-              </div>
-              <div>
-                <p className="text-sm text-slate-500">Phone</p>
-                <p className="font-medium">+91 98765 43210</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4">
-              <div className="p-3 rounded-xl bg-slate-100/60">
-                <MapPin size={20} />
-              </div>
-              <div>
-                <p className="text-sm text-slate-500">Location</p>
-                <p className="font-medium">Bengaluru, India</p>
+            <div className="mt-10">
+              <h3 className="text-sm font-semibold text-gray-700 mb-3">Follow</h3>
+              <div className="flex gap-4">
+                {["Twitter", "LinkedIn", "Instagram"].map((s, i) => (
+                  <a
+                    key={i}
+                    href="#"
+                    className="text-sm font-medium text-purple-600 hover:underline"
+                  >
+                    {s}
+                  </a>
+                ))}
               </div>
             </div>
-          </div>
+          </motion.aside>
 
-          <div className="mt-8">
-            <h3 className="text-sm font-semibold text-slate-700 mb-2">Follow</h3>
-            <div className="flex gap-3">
-              <a href="#" className="text-sm underline">Twitter</a>
-              <a href="#" className="text-sm underline">LinkedIn</a>
-              <a href="#" className="text-sm underline">Instagram</a>
+          {/* RIGHT FORM */}
+          <motion.form
+            onSubmit={handleSubmit}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.08 }}
+            className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-xl border border-gray-100 p-10"
+            noValidate
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {/* NAME */}
+              <label className="flex flex-col">
+                <span className="text-sm font-medium text-gray-700 mb-1">Your name</span>
+                <input
+                  name="name"
+                  value={form.name}
+                  onChange={handleChange}
+                  className={`rounded-xl border p-3 text-sm focus:ring-2 focus:ring-purple-300 ${
+                    errors.name ? "border-rose-400" : "border-gray-200"
+                  }`}
+                  placeholder="Anugrah"
+                />
+                {errors.name && <span className="text-rose-600 text-xs mt-1">{errors.name}</span>}
+              </label>
+
+              {/* EMAIL */}
+              <label className="flex flex-col">
+                <span className="text-sm font-medium text-gray-700 mb-1">Email</span>
+                <input
+                  name="email"
+                  type="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  className={`rounded-xl border p-3 text-sm focus:ring-2 focus:ring-purple-300 ${
+                    errors.email ? "border-rose-400" : "border-gray-200"
+                  }`}
+                  placeholder="you@company.com"
+                />
+                {errors.email && <span className="text-rose-600 text-xs mt-1">{errors.email}</span>}
+              </label>
             </div>
-          </div>
-        </motion.aside>
 
-        {/* Right: Form */}
-        <motion.form
-          onSubmit={handleSubmit}
-          initial={{ opacity: 0, x: 18 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay: 0.08 }}
-          className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100"
-          noValidate
-        >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <label className="flex flex-col">
-              <span className="text-sm font-medium text-slate-700 mb-1">Your name</span>
+            {/* SUBJECT */}
+            <label className="flex flex-col mt-5">
+              <span className="text-sm font-medium text-gray-700 mb-1">Subject</span>
               <input
-                name="name"
-                value={form.name}
+                name="subject"
+                value={form.subject}
                 onChange={handleChange}
-                className={`w-full rounded-lg border p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300 transition disabled:opacity-50 ${errors.name ? "border-rose-400" : "border-gray-200"}`}
-                placeholder="Anugrah"
-                aria-invalid={!!errors.name}
-                aria-describedby={errors.name ? "name-error" : undefined}
+                className={`rounded-xl border p-3 text-sm focus:ring-2 focus:ring-purple-300 ${
+                  errors.subject ? "border-rose-400" : "border-gray-200"
+                }`}
+                placeholder="How can we help?"
               />
-              {errors.name && <span id="name-error" className="text-rose-600 text-xs mt-1">{errors.name}</span>}
-            </label>
-
-            <label className="flex flex-col">
-              <span className="text-sm font-medium text-slate-700 mb-1">Email</span>
-              <input
-                name="email"
-                type="email"
-                value={form.email}
-                onChange={handleChange}
-                className={`w-full rounded-lg border p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300 transition disabled:opacity-50 ${errors.email ? "border-rose-400" : "border-gray-200"}`}
-                placeholder="you@company.com"
-                aria-invalid={!!errors.email}
-                aria-describedby={errors.email ? "email-error" : undefined}
-              />
-              {errors.email && <span id="email-error" className="text-rose-600 text-xs mt-1">{errors.email}</span>}
-            </label>
-          </div>
-
-          <label className="flex flex-col mt-4">
-            <span className="text-sm font-medium text-slate-700 mb-1">Subject</span>
-            <input
-              name="subject"
-              value={form.subject}
-              onChange={handleChange}
-              className={`w-full rounded-lg border p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300 transition disabled:opacity-50 ${errors.subject ? "border-rose-400" : "border-gray-200"}`}
-              placeholder="Project enquiry, collaboration, feedback..."
-              aria-invalid={!!errors.subject}
-              aria-describedby={errors.subject ? "subject-error" : undefined}
-            />
-            {errors.subject && <span id="subject-error" className="text-rose-600 text-xs mt-1">{errors.subject}</span>}
-          </label>
-
-          <label className="flex flex-col mt-4">
-            <span className="text-sm font-medium text-slate-700 mb-1">Message</span>
-            <textarea
-              name="message"
-              value={form.message}
-              onChange={handleChange}
-              rows={6}
-              className={`w-full rounded-lg border p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300 transition disabled:opacity-50 ${errors.message ? "border-rose-400" : "border-gray-200"}`}
-              placeholder="Tell me about your idea, timeline and budget..."
-              aria-invalid={!!errors.message}
-              aria-describedby={errors.message ? "message-error" : undefined}
-            />
-            {errors.message && <span id="message-error" className="text-rose-600 text-xs mt-1">{errors.message}</span>}
-          </label>
-
-          <div className="mt-6 flex items-center justify-between gap-4">
-            <motion.button
-              type="submit"
-              whileTap={{ scale: 0.98 }}
-              className="inline-flex items-center gap-2 bg-indigo-600 text-white text-sm font-semibold px-5 py-3 rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-              disabled={status === "sending"}
-            >
-              {status === "success" ? (
-                <>
-                  <Check size={16} /> Sent
-                </>
-              ) : (
-                <>
-                  <Send size={16} /> {status === "sending" ? "Sending..." : "Send message"}
-                </>
+              {errors.subject && (
+                <span className="text-rose-600 text-xs mt-1">{errors.subject}</span>
               )}
+            </label>
+
+            {/* MESSAGE */}
+            <label className="flex flex-col mt-5">
+              <span className="text-sm font-medium text-gray-700 mb-1">Message</span>
+              <textarea
+                name="message"
+                rows="5"
+                value={form.message}
+                onChange={handleChange}
+                className={`rounded-xl border p-3 text-sm focus:ring-2 focus:ring-purple-300 ${
+                  errors.message ? "border-rose-400" : "border-gray-200"
+                }`}
+                placeholder="Write your message..."
+              ></textarea>
+              {errors.message && (
+                <span className="text-rose-600 text-xs mt-1">{errors.message}</span>
+              )}
+            </label>
+
+            {/* BUTTON */}
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              disabled={status === "sending"}
+              className="mt-8 w-full py-3 rounded-full text-white font-semibold shadow-md bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-95 transition"
+            >
+              {status === "sending" ? "Sending..." : "Send Message"}
             </motion.button>
 
-            <div className="text-sm text-slate-500">Or email me at <span className="font-medium">hello@yourdomain.com</span></div>
-          </div>
-
-          {/* small helper text */}
-          <div className="mt-4 text-xs text-slate-400">We’ll never share your details. This form is protected by reCAPTCHA (if you add it server-side).</div>
-        </motion.form>
-      </div>
-    </section>
+            {/* STATUS */}
+            {status === "success" && (
+              <p className="text-green-600 text-sm mt-3">Message sent successfully!</p>
+            )}
+            {status === "error" && (
+              <p className="text-rose-600 text-sm mt-3">Failed to send. Try again.</p>
+            )}
+          </motion.form>
+        </div>
+      </section>
+    </div>
   );
 }

@@ -70,8 +70,8 @@ export default function Signup() {
   const showToast = (message, type = "success") => {
     const toast = document.createElement("div");
     toast.className = `
-      fixed top-5 right-5 px-5 py-3 rounded-xl shadow-xl z-50 
-      text-white font-semibold animate-slide 
+      fixed top-5 right-5 px-5 py-3 rounded-xl shadow-xl z-50
+      text-white font-semibold animate-slide
       ${type === "success" ? "bg-green-600" : "bg-red-600"}
     `;
     toast.innerText = message;
@@ -80,85 +80,121 @@ export default function Signup() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 flex justify-center items-center px-4">
+    <div className="w-full min-h-screen bg-gradient-to-br from-[#f3f6ff] via-white to-[#eef2ff] flex justify-center items-center px-4">
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full md:w-[420px] bg-white/80 backdrop-blur-xl border border-blue-100 rounded-2xl shadow-lg p-8 text-center"
+        className="w-full max-w-md bg-white/80 backdrop-blur-2xl border border-gray-200/50 shadow-[0_8px_25px_rgba(0,0,0,0.05)] rounded-2xl p-10"
       >
-        <h1 className="text-3xl font-semibold text-blue-700 mb-2">
+
+        {/* Title */}
+        <h1 className="text-3xl font-semibold text-gray-800 text-center tracking-tight">
           Create Account ✨
         </h1>
-        <p className="text-gray-500 text-sm mb-6">
-          Join <span className="font-semibold text-blue-600">ZenElegance</span>
+        <p className="text-center text-gray-500 mt-1">
+          Join{" "}
+          <span className="text-indigo-600 font-semibold">Shop Ease</span>
         </p>
 
         {errors.server && (
-          <p className="text-red-600 mb-3 text-sm">{errors.server}</p>
+          <p className="text-red-600 text-center mt-4 text-sm">
+            {errors.server}
+          </p>
         )}
 
-        <form onSubmit={handleSignup} className="flex flex-col items-center gap-4">
-          {/** Name */}
-          <input
-            name="name"
-            type="text"
-            placeholder="Full Name"
-            value={form.name}
-            onChange={handleChange}
-            className={`w-full px-4 py-3 rounded-full border ${
-              errors.name ? "border-rose-400" : "border-blue-200"
-            } bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-300 transition`}
-          />
-          {errors.name && <p className="text-rose-500 text-xs">{errors.name}</p>}
+        {/* Form */}
+        <form
+          onSubmit={handleSignup}
+          className="mt-8 flex flex-col gap-5"
+        >
+          {/* Name */}
+          <div>
+            <label className="text-sm text-gray-600 font-medium">
+              Full Name
+            </label>
+            <input
+              type="text"
+              name="name"
+              placeholder="John Doe"
+              value={form.name}
+              onChange={handleChange}
+              className={`w-full px-5 py-3 rounded-xl border ${
+                errors.name ? "border-rose-400" : "border-gray-300"
+              } bg-gray-50 focus:ring-2 focus:ring-indigo-300 outline-none transition shadow-sm`}
+            />
+            {errors.name && (
+              <p className="text-rose-500 text-xs mt-1">{errors.name}</p>
+            )}
+          </div>
 
-          {/** Email */}
-          <input
-            name="email"
-            type="email"
-            placeholder="Email address"
-            value={form.email}
-            onChange={handleChange}
-            className={`w-full px-4 py-3 rounded-full border ${
-              errors.email ? "border-rose-400" : "border-blue-200"
-            } bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-300 transition`}
-          />
-          {errors.email && <p className="text-rose-500 text-xs">{errors.email}</p>}
+          {/* Email */}
+          <div>
+            <label className="text-sm text-gray-600 font-medium">Email</label>
+            <input
+              type="email"
+              name="email"
+              placeholder="you@example.com"
+              value={form.email}
+              onChange={handleChange}
+              className={`w-full px-5 py-3 rounded-xl border ${
+                errors.email ? "border-rose-400" : "border-gray-300"
+              } bg-gray-50 focus:ring-2 focus:ring-indigo-300 outline-none transition shadow-sm`}
+            />
+            {errors.email && (
+              <p className="text-rose-500 text-xs mt-1">{errors.email}</p>
+            )}
+          </div>
 
-          {/** Password */}
-          <input
-            name="password"
-            type="password"
-            placeholder="Create password"
-            value={form.password}
-            onChange={handleChange}
-            className={`w-full px-4 py-3 rounded-full border ${
-              errors.password ? "border-rose-400" : "border-blue-200"
-            } bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-300 transition`}
-          />
-          {errors.password && <p className="text-rose-500 text-xs">{errors.password}</p>}
+          {/* Password */}
+          <div>
+            <label className="text-sm text-gray-600 font-medium">
+              Password
+            </label>
+            <input
+              type="password"
+              name="password"
+              placeholder="••••••••"
+              value={form.password}
+              onChange={handleChange}
+              className={`w-full px-5 py-3 rounded-xl border ${
+                errors.password ? "border-rose-400" : "border-gray-300"
+              } bg-gray-50 focus:ring-2 focus:ring-indigo-300 outline-none transition shadow-sm`}
+            />
+            {errors.password && (
+              <p className="text-rose-500 text-xs mt-1">{errors.password}</p>
+            )}
+          </div>
 
-          {/** Confirm Password */}
-          <input
-            name="confirmPassword"
-            type="password"
-            placeholder="Confirm password"
-            value={form.confirmPassword}
-            onChange={handleChange}
-            className={`w-full px-4 py-3 rounded-full border ${
-              errors.confirmPassword ? "border-rose-400" : "border-blue-200"
-            } bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-300 transition`}
-          />
-          {errors.confirmPassword && (
-            <p className="text-rose-500 text-xs">{errors.confirmPassword}</p>
-          )}
+          {/* Confirm Password */}
+          <div>
+            <label className="text-sm text-gray-600 font-medium">
+              Confirm Password
+            </label>
+            <input
+              type="password"
+              name="confirmPassword"
+              placeholder="••••••••"
+              value={form.confirmPassword}
+              onChange={handleChange}
+              className={`w-full px-5 py-3 rounded-xl border ${
+                errors.confirmPassword ? "border-rose-400" : "border-gray-300"
+              } bg-gray-50 focus:ring-2 focus:ring-indigo-300 outline-none transition shadow-sm`}
+            />
+            {errors.confirmPassword && (
+              <p className="text-rose-500 text-xs mt-1">
+                {errors.confirmPassword}
+              </p>
+            )}
+          </div>
 
-          {/** Submit Button */}
+          {/* Button */}
           <motion.button
             type="submit"
             disabled={loading}
             whileTap={{ scale: 0.97 }}
-            className="w-full mt-4 bg-blue-600 text-white py-3 rounded-full font-medium hover:bg-blue-700 shadow-md transition flex justify-center items-center gap-2"
+            className="w-full mt-2 bg-indigo-600 text-white py-3 rounded-xl font-medium hover:bg-indigo-700 active:scale-95 transition flex justify-center items-center gap-2 shadow"
           >
             {status === "success" ? (
               <>
@@ -172,9 +208,13 @@ export default function Signup() {
           </motion.button>
         </form>
 
-        <p className="mt-6 text-sm text-gray-600">
+        {/* Already have account */}
+        <p className="text-center text-sm text-gray-600 mt-6">
           Already have an account?{" "}
-          <Link to="/login" className="text-blue-600 font-medium">
+          <Link
+            to="/login"
+            className="text-indigo-600 font-semibold hover:underline"
+          >
             Login
           </Link>
         </p>

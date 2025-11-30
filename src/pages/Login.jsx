@@ -12,12 +12,10 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Handle input
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // Submit Login
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -43,7 +41,6 @@ export default function Login() {
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
       navigate("/");
-
     } catch (error) {
       setLoading(false);
       setError("Something went wrong. Try again.");
@@ -51,16 +48,18 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-blue-50 via-white to-blue-100 flex items-center justify-center px-4">
+    <div className="min-h-screen w-full bg-gradient-to-br from-[#f3f6ff] via-white to-[#eef2ff] flex items-center justify-center px-4">
 
-      {/* Card */}
-      <div className="w-full max-w-md bg-white/60 backdrop-blur-xl shadow-2xl rounded-3xl border border-white/50 px-10 py-12">
+      {/* Main Card */}
+      <div className="w-full max-w-md bg-white/80 backdrop-blur-2xl border border-gray-200/50 shadow-[0_8px_25px_rgba(0,0,0,0.05)] rounded-2xl p-10">
 
-        {/* Title */}
-        <h1 className="text-4xl font-bold text-blue-700 text-center">Welcome Back</h1>
-        <p className="text-center text-gray-500 mt-2">
-          Sign in to continue shopping with{" "}
-          <span className="font-semibold text-blue-600">ZenElegance</span>
+        {/* Heading */}
+        <h1 className="text-3xl font-semibold text-gray-800 text-center tracking-tight">
+          Welcome Back 👋
+        </h1>
+        <p className="text-center text-gray-500 mt-1">
+          Continue your journey with{" "}
+          <span className="font-semibold text-indigo-600">Shop Ease</span>
         </p>
 
         {/* Error */}
@@ -71,49 +70,55 @@ export default function Login() {
         {/* Form */}
         <form onSubmit={handleLogin} className="mt-8 space-y-5">
 
-          <input
-            type="email"
-            name="email"
-            placeholder="Email Address"
-            value={form.email}
-            onChange={handleChange}
-            className="w-full px-5 py-3 rounded-xl border border-blue-200 bg-blue-50/40 backdrop-blur-sm shadow-sm focus:ring-2 focus:ring-blue-300 outline-none transition"
-          />
+          <div className="flex flex-col gap-2">
+            <label className="text-sm text-gray-600 font-medium">Email</label>
+            <input
+              type="email"
+              name="email"
+              placeholder="you@example.com"
+              value={form.email}
+              onChange={handleChange}
+              className="w-full px-5 py-3 rounded-xl border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-indigo-300 outline-none transition shadow-sm"
+            />
+          </div>
 
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={form.password}
-            onChange={handleChange}
-            className="w-full px-5 py-3 rounded-xl border border-blue-200 bg-blue-50/40 backdrop-blur-sm shadow-sm focus:ring-2 focus:ring-blue-300 outline-none transition"
-          />
+          <div className="flex flex-col gap-2">
+            <label className="text-sm text-gray-600 font-medium">Password</label>
+            <input
+              type="password"
+              name="password"
+              placeholder="••••••••"
+              value={form.password}
+              onChange={handleChange}
+              className="w-full px-5 py-3 rounded-xl border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-indigo-300 outline-none transition shadow-sm"
+            />
+          </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-xl bg-blue-600 text-white font-medium shadow-md hover:bg-blue-700 active:scale-95 transition"
+            className="w-full py-3 rounded-xl bg-indigo-600 text-white font-medium shadow hover:bg-indigo-700 active:scale-95 transition"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
-        {/* Forgot password */}
+        {/* Forgot Password */}
         <div className="mt-4 text-center">
-          <button className="text-sm text-blue-500 hover:underline">
+          <button className="text-sm text-indigo-500 hover:underline">
             Forgot your password?
           </button>
         </div>
 
         {/* Divider */}
         <div className="flex items-center my-6">
-          <div className="flex-1 h-px bg-blue-200"></div>
+          <div className="flex-1 h-px bg-gray-300"></div>
           <span className="px-3 text-gray-400 text-sm">or</span>
-          <div className="flex-1 h-px bg-blue-200"></div>
+          <div className="flex-1 h-px bg-gray-300"></div>
         </div>
 
-        {/* Google login */}
-        <button className="w-full py-3 rounded-xl border border-blue-200 bg-white/60 backdrop-blur-md flex items-center justify-center gap-3 hover:bg-blue-50 transition">
+        {/* Google Login */}
+        <button className="w-full py-3 rounded-xl border border-gray-300 bg-white/70 backdrop-blur-md flex items-center justify-center gap-3 hover:bg-gray-50 transition shadow-sm">
           <img
             src="https://www.svgrepo.com/show/475656/google-color.svg"
             className="w-5 h-5"
@@ -123,10 +128,13 @@ export default function Login() {
           </span>
         </button>
 
-        {/* Signup */}
+        {/* Signup Link */}
         <p className="text-center text-sm text-gray-600 mt-6">
           Don’t have an account?{" "}
-          <Link to="/signup" className="text-blue-600 font-semibold hover:underline">
+          <Link
+            to="/signup"
+            className="text-indigo-600 font-semibold hover:underline"
+          >
             Sign Up
           </Link>
         </p>
