@@ -10,7 +10,7 @@ function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
 
-  // Fetch live search results
+
   const fetchSuggestions = async (value) => {
     if (!value.trim()) return setSuggestions([]);
 

@@ -57,7 +57,6 @@ export default function AddToCartButton({ product, className }) {
         Add to Cart
       </motion.button>
 
-      {/* Tailwind custom animation */}
       <style>{`
         @keyframes toastSlide {
           0% { opacity: 0; transform: translateX(100%) translateY(-10px); }

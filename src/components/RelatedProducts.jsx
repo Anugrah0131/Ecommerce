@@ -25,24 +25,53 @@ export default function RelatedProducts({ related }) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: index * 0.1 }}
-            className="group bg-white rounded-3xl shadow-lg border border-gray-100 hover:shadow-2xl hover:border-blue-300 transition overflow-hidden"
+            className="
+              group 
+              bg-white/70 backdrop-blur-lg 
+              rounded-3xl 
+              shadow-lg 
+              border border-gray-200
+              hover:border-blue-400 
+              hover:shadow-2xl 
+              hover:-translate-y-1
+              transition-all 
+              overflow-hidden
+            "
           >
             <Link to={`/details/${item._id}`}>
-              <div className="w-full h-48 flex items-center justify-center bg-gray-100 overflow-hidden">
-                <img
+              {/* Image */}
+              <div className="relative w-full h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
+                <motion.img
                   src={item.image}
                   alt={item.title}
-                  className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-110"
+                  className="w-full h-full object-contain"
+                  whileHover={{ scale: 1.12 }}
+                  transition={{ duration: 0.4 }}
                 />
               </div>
 
+              {/* Content */}
               <div className="p-4 text-center">
-                <h3 className="text-gray-900 font-medium text-sm line-clamp-2 mb-2 group-hover:text-blue-600 transition-colors">
+                <h3 className="text-gray-900 font-semibold text-sm line-clamp-2 mb-2 group-hover:text-blue-600 transition-colors">
                   {item.title}
                 </h3>
-                <p className="text-blue-600 font-semibold text-lg mb-3">₹ {item.price}</p>
+
+                <p className="text-blue-600 font-bold text-lg mb-3">
+                  ₹ {item.price}
+                </p>
+
                 <button
-                  className="w-full py-2 rounded-xl border border-blue-500 text-blue-600 font-semibold group-hover:bg-blue-600 group-hover:text-white transition"
+                  className="
+                    w-full py-2 
+                    rounded-xl 
+                    bg-blue-50 
+                    text-blue-600 
+                    font-semibold 
+                    border border-blue-300
+                    group-hover:bg-blue-600 
+                    group-hover:text-white 
+                    transition-all
+                  "
                 >
                   View Product
                 </button>
