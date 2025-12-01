@@ -17,6 +17,7 @@ import Cart from "./pages/Cart";
 import Signup from "./components/Signup";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
+import CategoryView from "./components/CategoryView";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -33,11 +34,12 @@ createRoot(document.getElementById("root")).render(
         <Route path="/cart" element={<Cart />} />
         <Route path="/login" element={<Login />} />
         <Route path="/table" element={<Table />} />
-        <Route path="/categories" element={<Category />} />
+        <Route path="/category" element={<Category />} />
         <Route path="/search" element={<SearchResults />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/about" element={<About />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/categoryview" element={<CategoryView />} />
 
         {/* Protected Routes */}
         <Route

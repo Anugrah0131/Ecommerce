@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import RelatedProducts from "../components/RelatedProducts";
 import AddToCartButton from "../components/AddToCartButton";
+import { motion } from "framer-motion";
 
-
-function Details() {
+export default function Details() {
   const [product, setProduct] = useState({});
   const [allProducts, setAllProducts] = useState([]);
   const [related, setRelated] = useState([]);
@@ -22,7 +22,7 @@ function Details() {
     }
   };
 
-  // Fetch ALL products (required for filtering)
+  // Fetch ALL products
   const getAllProducts = async () => {
     try {
       const res = await fetch("http://localhost:8080/api/products");
@@ -33,13 +33,17 @@ function Details() {
     }
   };
 
-  // FRONTEND FILTER BASED RELATED PRODUCTS
+  // Related products
   const generateRelated = (current, products) => {
     if (!current?.category?._id) return;
 
-    const relatedItems = products.filter(
-      (p) => p.category === current.category?._id || p.category?._id === current.category?._id
-    ).filter((p) => p._id !== current._id);
+    const relatedItems = products
+      .filter(
+        (p) =>
+          p.category === current.category?._id ||
+          p.category?._id === current.category?._id
+      )
+      .filter((p) => p._id !== current._id);
 
     setRelated(relatedItems);
   };
@@ -49,7 +53,6 @@ function Details() {
     getAllProducts();
   }, [id]);
 
-  // Once product + allProducts loaded → calculate related
   useEffect(() => {
     if (product && allProducts.length > 0) {
       generateRelated(product, allProducts);
@@ -67,52 +70,77 @@ function Details() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-6">
-      <div className="bg-white rounded-2xl shadow-lg max-w-4xl mx-auto grid md:grid-cols-2 overflow-hidden">
+    <div className="min-h-screen bg-[#f5f5f7] py-14 px-4 md:px-10">
 
-        {/* Image */}
-        <div className="flex justify-center items-center bg-gray-100 p-6">
+      {/* =========================
+          PRODUCT SECTION (APPLE STYLE)
+      ========================== */}
+      <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10 items-center bg-white rounded-3xl shadow-xl p-10">
+
+        {/* IMAGE */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="flex justify-center items-center"
+        >
           <img
             src={`http://localhost:8080/${product.image}`}
             alt={product.title}
-            className="w-full h-80 object-contain hover:scale-105 transition-transform duration-500"
+            className="w-full max-h-[450px] object-contain drop-shadow-md hover:scale-105 transition-all duration-500"
           />
-        </div>
+        </motion.div>
 
-        {/* Product Info */}
-        <div className="flex flex-col justify-center p-8 gap-4">
+        {/* RIGHT SIDE INFO */}
+        <div className="flex flex-col gap-6">
 
-          <h1 className="text-3xl font-bold text-gray-900 leading-tight">
+          {/* Title */}
+          <h1 className="text-4xl md:text-5xl font-semibold text-gray-900 leading-tight">
             {product.title}
           </h1>
 
-          <div className="flex items-center gap-2 text-yellow-500 text-sm">
-            ⭐⭐⭐⭐⭐ <span className="text-gray-600 ml-1">(1,142 ratings)</span>
+          {/* Ratings */}
+          <div className="flex items-center gap-2 text-yellow-500 text-[15px]">
+            ⭐⭐⭐⭐⭐ 
+            <span className="text-gray-600">(1,142 reviews)</span>
           </div>
 
+          {/* Tags */}
           <div className="flex flex-wrap gap-2 mt-1">
-            <span className="bg-green-100 text-green-700 px-3 py-1 text-xs rounded-full">Best Seller</span>
-            <span className="bg-blue-100 text-blue-700 px-3 py-1 text-xs rounded-full">Free Delivery</span>
-            <span className="bg-yellow-100 text-yellow-700 px-3 py-1 text-xs rounded-full">7-Day Return</span>
+            <span className="px-3 py-1 text-xs rounded-full bg-green-100 text-green-700">
+              Best Seller
+            </span>
+            <span className="px-3 py-1 text-xs rounded-full bg-blue-100 text-blue-700">
+              Free Delivery
+            </span>
+            <span className="px-3 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700">
+              7-Day Return
+            </span>
           </div>
 
+          {/* Price */}
           <div className="mt-3">
-            <p className="text-3xl font-bold text-blue-600">₹ {product.price}</p>
-            <p className="text-sm text-gray-500">Inclusive of all taxes</p>
+            <p className="text-4xl font-extrabold text-[#0071e3]">
+              ₹{product.price}
+            </p>
+            <p className="text-sm text-gray-500">
+              Inclusive of all taxes
+            </p>
           </div>
 
-          <p className="text-gray-700 leading-relaxed mt-4 text-[15px]">
+          {/* Description */}
+          <p className="text-gray-700 leading-relaxed text-[16px]">
             {product.description}
           </p>
 
-          <div className="flex gap-4 mt-6">
+          {/* Buttons */}
+          <div className="flex gap-4 mt-4">
 
-          <AddToCartButton product={product} />
-
+            <AddToCartButton product={product} />
 
             <Link
               to="/products"
-              className="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-100 transition w-[180px] text-center"
+              className="bg-gray-100 hover:bg-gray-200 transition px-6 py-3 rounded-xl text-gray-800 font-medium"
             >
               Back to Shop
             </Link>
@@ -120,10 +148,11 @@ function Details() {
         </div>
       </div>
 
-      {/* Related Products */}
-      <RelatedProducts related={related} />
+      {/* RELATED PRODUCTS */}
+      <div className="mt-16">
+        <RelatedProducts related={related} />
+      </div>
+
     </div>
   );
 }
-
-export default Details;

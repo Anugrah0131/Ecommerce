@@ -81,7 +81,7 @@ export default function Home() {
               transition={{ duration: 0.6 }}
               className="px-3 py-1 rounded-full bg-white/70 backdrop-blur-md text-purple-600 text-sm shadow-sm border border-white/40"
             >
-              Aesthetic · Modern · Curated
+              Minimal · Modern · Curated
             </motion.span>
 
             <motion.h1
@@ -115,7 +115,7 @@ export default function Home() {
                 Explore now
               </Link>
               <Link
-                to="/categories"
+                to="/categoryview"
                 className="px-6 py-3 rounded-full border border-gray-300 bg-white/50 backdrop-blur-md shadow-sm hover:bg-white transition"
               >
                 Categories
@@ -209,7 +209,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl font-bold text-gray-900">Shop by Category</h2>
-            <Link to="/categories" className="text-sm text-purple-600 hover:underline">
+            <Link to="/categoryview" className="text-sm text-purple-600 hover:underline">
               See all categories
             </Link>
           </div>
