@@ -70,22 +70,53 @@ export default function Profile() {
     // localStorage.removeItem("avatar");
     navigate("/login");
   };
+if (!user) {
+  return (
+    <div className="min-h-screen flex items-center justify-center px-4 
+      bg-[radial-gradient(circle_at_20%_20%,#e8e9ff,#ffffff,#e6e9ff)] relative overflow-hidden">
 
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f3f6ff] via-white to-[#eef2ff]">
-        <div className="text-center p-8 bg-white/80 rounded-2xl shadow">
-          <h2 className="text-xl font-semibold">No user found</h2>
-          <p className="text-sm text-gray-600 mt-2">Please login to view your profile.</p>
-          <div className="mt-4">
-            <Link to="/login" className="text-indigo-600 font-medium hover:underline">
-              Go to Login
-            </Link>
+      {/* floating background blobs */}
+      <div className="absolute -top-20 -left-20 w-72 h-72 bg-indigo-300/30 blur-3xl rounded-full"></div>
+      <div className="absolute bottom-0 right-0 w-72 h-72 bg-purple-300/30 blur-3xl rounded-full"></div>
+
+      <div className="relative w-full max-w-md p-10 rounded-3xl 
+        backdrop-blur-2xl bg-white/60 border border-white/30 
+        shadow-[0_8px_35px_rgba(0,0,0,0.08)]">
+
+        {/* Icon */}
+        <div className="flex justify-center mb-4">
+          <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-500
+            rounded-2xl flex items-center justify-center shadow-lg">
+            <span className="text-white text-3xl">!</span>
           </div>
         </div>
+
+        <h2 className="text-2xl font-semibold text-gray-800 text-center">
+          No User Found
+        </h2>
+
+        <p className="text-center text-gray-600 mt-3 leading-relaxed">
+          You need to be logged in to access your profile.  
+          Please sign in to continue your journey.
+        </p>
+
+        {/* button */}
+        <div className="mt-6 flex justify-center">
+          <Link
+            to="/login"
+            className="px-6 py-3 rounded-xl font-semibold text-white 
+              bg-gradient-to-r from-indigo-600 to-purple-600 
+              shadow-lg hover:shadow-xl hover:scale-[1.03] 
+              transition-transform duration-300"
+          >
+            Go to Login
+          </Link>
+        </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
+
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-[#eef2ff] via-white to-[#e9f0ff] flex items-start justify-center py-12 px-4">
