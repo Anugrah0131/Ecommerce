@@ -19,12 +19,15 @@ import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import CategoryView from "./components/CategoryView";
 import Profile from "./pages/Profile";
+import Checkout from "./pages/Checkout";
+import OrderSuccess from "./pages/OrderSuccess";
+
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <Navbar />
-
+      <Cart />
       <Routes>
         {/* Public Routes */}
         
@@ -32,7 +35,6 @@ createRoot(document.getElementById("root")).render(
         <Route path="/category/:id" element={<SingleCategory />} />
         <Route path="/products" element={<Products />} />
         <Route path="/details/:id" element={<Details />} />
-        <Route path="/cart" element={<Cart />} />
         <Route path="/login" element={<Login />} />
         <Route path="/table" element={<Table />} />
         <Route path="/category" element={<Category />} />
@@ -41,7 +43,10 @@ createRoot(document.getElementById("root")).render(
         <Route path="/about" element={<About />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/categoryview" element={<CategoryView />} />
-         <Route path="/profile" element={<Profile/>} />
+        <Route path="/profile" element={<Profile/>} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/order-success" element={<OrderSuccess />} />
+
 
         {/* Protected Routes */}
         <Route

@@ -1,7 +1,7 @@
-// Cart.jsx — PREMIUM GLASSMORPHIC DRAWER
+// Cart.jsx — PREMIUM GLASSMORPHIC DRAWER (FIXED)
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Trash2, Minus, Plus, X, CreditCard, Tag, Truck } from "lucide-react";
+import { Trash2, Minus, Plus, X, Tag } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function Cart() {
@@ -22,12 +22,15 @@ export default function Cart() {
   ];
 
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("cart")) || [];
-    const savedCoupon = JSON.parse(localStorage.getItem("cart_coupon")) || null;
+    try {
+      const stored = JSON.parse(localStorage.getItem("cart")) || [];
+      const savedCoupon =
+        JSON.parse(localStorage.getItem("cart_coupon")) || null;
 
-    setCart(stored);
-    setAppliedCoupon(savedCoupon);
-    setCouponInput(savedCoupon?.code || "");
+      setCart(stored);
+      setAppliedCoupon(savedCoupon);
+      setCouponInput(savedCoupon?.code || "");
+    } catch {}
   }, []);
 
   const persistCart = (updated) => {
@@ -52,11 +55,12 @@ export default function Cart() {
   const updateQuantity = (id, amt) => {
     const updated = cart.map((item) => {
       if (item._id === id) {
-        const q = Math.max(1, item.quantity + amt);
-        return { ...item, quantity: q };
+        const qty = Math.max(1, item.quantity + amt);
+        return { ...item, quantity: qty };
       }
       return item;
     });
+
     persistCart(updated);
   };
 
@@ -103,7 +107,7 @@ export default function Cart() {
 
   return (
     <>
-      {/* Floating Cart Button — USE THIS IN NAVBAR */}
+      {/* Button (triggerable from Navbar) */}
       <button
         onClick={() => setDrawerOpen(true)}
         className="hidden"
@@ -142,7 +146,7 @@ export default function Cart() {
                   onClick={() => setDrawerOpen(false)}
                   className="p-2 hover:bg-white/10 rounded-xl transition"
                 >
-                  <X size={22} className="text-gray-700 dark:text-white" />
+                  <X size={22} className="text-gray-700" />
                 </button>
               </div>
 
@@ -173,6 +177,7 @@ export default function Cart() {
                     >
                       <img
                         src={item.image}
+                        alt={item.title}
                         className="w-20 h-20 rounded-xl object-cover shadow"
                       />
 
@@ -190,7 +195,9 @@ export default function Cart() {
                             >
                               <Minus size={14} />
                             </button>
-                            <span className="font-semibold">{item.quantity}</span>
+                            <span className="font-semibold">
+                              {item.quantity}
+                            </span>
                             <button
                               onClick={() => updateQuantity(item._id, 1)}
                             >
@@ -232,6 +239,7 @@ export default function Cart() {
                     value={couponInput}
                     onChange={(e) => setCouponInput(e.target.value)}
                     className="flex-1 px-4 py-2 rounded-xl bg-white/40 border"
+                    placeholder="Enter coupon"
                   />
                   {!appliedCoupon ? (
                     <button
@@ -251,7 +259,7 @@ export default function Cart() {
                 </div>
               </div>
 
-              {/* Price Boxes */}
+              {/* Pricing */}
               <div className="mt-6 p-4 rounded-2xl bg-white/20 backdrop-blur-xl border border-white/30">
                 <div className="flex justify-between text-gray-700">
                   <span>Subtotal</span>
@@ -279,12 +287,16 @@ export default function Cart() {
               </div>
 
               <div className="mt-5">
-                <button
-                  onClick={() => setShowCheckout(true)}
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold shadow-xl"
-                >
-                  Proceed to Checkout
-                </button>
+             <button
+  onClick={() => {
+    setDrawerOpen(false);   // close cart drawer
+    window.location.href = "/checkout"; // navigate to checkout page
+  }}
+  className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold shadow-xl"
+>
+  Proceed to Checkout
+</button>
+
               </div>
             </motion.aside>
           </>

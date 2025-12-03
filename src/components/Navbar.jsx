@@ -139,8 +139,9 @@ function Navbar() {
           {/* CART BUTTON WITH COUNT */}
    <motion.button
   onClick={() => {
-    const drawerBtn = document.getElementById("openCartDrawerButton");
-    if (drawerBtn) drawerBtn.click();
+    const btn = document.getElementById("openCartDrawerButton");
+    if (btn) btn.click();
+    else console.warn("Cart drawer not mounted!");
   }}
   whileHover={{ scale: 1.06 }}
   className="relative flex items-center gap-2 bg-gradient-to-r from-purple-300 to-pink-300 text-black px-5 py-2.5 rounded-full font-semibold shadow-md hover:shadow-lg transition"
@@ -153,6 +154,7 @@ function Navbar() {
     </span>
   )}
 </motion.button>
+
 
 
           {/* LOGIN */}
