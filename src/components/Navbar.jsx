@@ -137,20 +137,23 @@ function Navbar() {
           </div>
 
           {/* CART BUTTON WITH COUNT */}
-          <motion.button
-            onClick={() => navigate("/cart")}
-            whileHover={{ scale: 1.06 }}
-            className="relative flex items-center gap-2 bg-gradient-to-r from-purple-300 to-pink-300 text-black px-5 py-2.5 rounded-full font-semibold shadow-md hover:shadow-lg transition"
-          >
-            <ShoppingCart size={18} /> Cart
+   <motion.button
+  onClick={() => {
+    const drawerBtn = document.getElementById("openCartDrawerButton");
+    if (drawerBtn) drawerBtn.click();
+  }}
+  whileHover={{ scale: 1.06 }}
+  className="relative flex items-center gap-2 bg-gradient-to-r from-purple-300 to-pink-300 text-black px-5 py-2.5 rounded-full font-semibold shadow-md hover:shadow-lg transition"
+>
+  <ShoppingCart size={18} /> Cart
 
-            {/* COUNT BADGE */}
-            {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-2 py-0.5 rounded-full shadow">
-                {cartCount}
-              </span>
-            )}
-          </motion.button>
+  {cartCount > 0 && (
+    <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-2 py-0.5 rounded-full shadow">
+      {cartCount}
+    </span>
+  )}
+</motion.button>
+
 
           {/* LOGIN */}
           <motion.button
