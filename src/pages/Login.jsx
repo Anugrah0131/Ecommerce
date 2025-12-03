@@ -43,7 +43,7 @@ export default function Login() {
       navigate("/");
     } catch (error) {
       setLoading(false);
-      setError("Something went wrong. Try again.");
+      setError("Something went wrong. Try again.");    
     }
   };
 

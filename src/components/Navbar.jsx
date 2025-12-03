@@ -1,6 +1,4 @@
-// Updated responsive desktop width fixes applied
-// (Logic unchanged)
-
+// Full Premium Navbar with Live Cart Sync
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ShoppingCart, Search, LogIn, Menu, X } from "lucide-react";
@@ -8,10 +6,31 @@ import { motion } from "framer-motion";
 
 function Navbar() {
   const navigate = useNavigate();
+
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
+
+  // ➤ NEW: Live cart count sync
+  const [cartCount, setCartCount] = useState(0);
+
+  // Read cart from localStorage
+  const updateCartCount = () => {
+    const stored = JSON.parse(localStorage.getItem("cart")) || [];
+    const totalQty = stored.reduce((sum, item) => sum + item.quantity, 0);
+    setCartCount(totalQty);
+  };
+
+  // Load on mount
+  useEffect(() => {
+    updateCartCount();
+
+    // Listen to updates from other components
+    window.addEventListener("cartUpdated", updateCartCount);
+
+    return () => window.removeEventListener("cartUpdated", updateCartCount);
+  }, []);
 
   const fetchSuggestions = async (value) => {
     if (!value.trim()) return setSuggestions([]);
@@ -43,14 +62,12 @@ function Navbar() {
 
         {/* BRAND */}
         <Link to="/" className="text-3xl font-extrabold tracking-wide flex items-center gap-2 whitespace-nowrap">
-          <span className="bg-gradient-to-r from-purple-300 to-pink-400 bg-clip-text text-transparent">
-            Shop
-          </span>
+          <span className="bg-gradient-to-r from-purple-300 to-pink-400 bg-clip-text text-transparent">Shop</span>
           <span className="text-white">Ease</span>
         </Link>
 
         {/* DESKTOP */}
-        <div className="hidden lg:flex items-center gap-6 xl:gap-10 flex-shrink">
+        <div className="hidden lg:flex items-center gap-6 xl:gap-10">
 
           {/* SEARCH */}
           <div className="relative w-60 xl:w-72">
@@ -82,13 +99,13 @@ function Navbar() {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.25 }}
-                className="absolute left-0 w-full mt-2 bg-white/95 backdrop-blur-xl text-black rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.2)] overflow-hidden border border-gray-200"
+                className="absolute left-0 w-full mt-2 bg-white/95 text-black rounded-2xl shadow-xl overflow-hidden border border-gray-200"
               >
                 {suggestions.map((item) => (
                   <motion.div
                     key={item._id}
                     whileHover={{ backgroundColor: "#f3e8ff" }}
-                    className="flex items-center gap-3 p-3 cursor-pointer transition"
+                    className="flex items-center gap-3 p-3 cursor-pointer"
                     onClick={() => {
                       navigate(`/product/${item._id}`);
                       setShowDropdown(false);
@@ -106,49 +123,42 @@ function Navbar() {
           </div>
 
           {/* NAV LINKS */}
-          <div className="flex items-center gap-6 xl:gap-8 text-lg font-medium whitespace-nowrap">
+          <div className="flex items-center gap-6 xl:gap-8 text-lg font-medium">
             {["Home", "Products", "Contact", "About"].map((text) => (
               <Link
                 key={text}
                 to={text === "Home" ? "/" : `/${text.toLowerCase()}`}
                 className="relative group"
               >
-                <span className="text-white group-hover:text-purple-300 transition">
-                  {text}
-                </span>
+                <span className="text-white group-hover:text-purple-300 transition">{text}</span>
                 <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-purple-400 group-hover:w-full transition-all duration-300"></span>
               </Link>
             ))}
           </div>
 
-          {/* CART */}
+          {/* CART BUTTON WITH COUNT */}
           <motion.button
             onClick={() => navigate("/cart")}
             whileHover={{ scale: 1.06 }}
-            className="flex items-center gap-2 bg-gradient-to-r from-purple-300 to-pink-300 text-black px-4 xl:px-5 py-2.5 rounded-full font-semibold shadow-md hover:shadow-lg transition whitespace-nowrap"
+            className="relative flex items-center gap-2 bg-gradient-to-r from-purple-300 to-pink-300 text-black px-5 py-2.5 rounded-full font-semibold shadow-md hover:shadow-lg transition"
           >
-            <ShoppingCart size={18} />
-            Cart
-          </motion.button>
+            <ShoppingCart size={18} /> Cart
 
-          {/* PROFILE */}
-          <motion.button
-            onClick={() => navigate("/profile")}
-            whileHover={{ scale: 1.06 }}
-            className="flex items-center gap-2 border border-purple-300 text-purple-300 px-4 xl:px-5 py-2.5 rounded-full font-semibold hover:bg-purple-300 hover:text-black transition shadow-md whitespace-nowrap"
-          >
-            <LogIn size={18} />
-            Profile
+            {/* COUNT BADGE */}
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-2 py-0.5 rounded-full shadow">
+                {cartCount}
+              </span>
+            )}
           </motion.button>
 
           {/* LOGIN */}
           <motion.button
             onClick={() => navigate("/login")}
             whileHover={{ scale: 1.06 }}
-            className="flex items-center gap-2 border border-purple-300 text-purple-300 px-4 xl:px-5 py-2.5 rounded-full font-semibold hover:bg-purple-300 hover:text-black transition shadow-md whitespace-nowrap"
+            className="flex items-center gap-2 border border-purple-300 text-purple-300 px-5 py-2.5 rounded-full font-semibold hover:bg-purple-300 hover:text-black transition shadow-md"
           >
-            <LogIn size={18} />
-            Login
+            <LogIn size={18} /> Login
           </motion.button>
         </div>
 
@@ -170,12 +180,13 @@ function Navbar() {
           <Link to="/products" className="block hover:text-purple-300">Products</Link>
           <Link to="/contact" className="block hover:text-purple-300">Contact</Link>
           <Link to="/about" className="block hover:text-purple-300">About</Link>
-          <Link to="/profile" className="block hover:text-purple-300">Profile</Link>
+
+          {/* MOBILE CART */}
           <button
             onClick={() => navigate("/cart")}
-            className="w-full bg-gradient-to-r from-purple-300 to-pink-300 text-black py-2 rounded-full font-semibold shadow-lg"
+            className="w-full bg-gradient-to-r from-purple-300 to-pink-300 text-black py-2 rounded-full font-semibold shadow-lg flex items-center justify-center gap-2"
           >
-            Cart
+            <ShoppingCart size={18} /> Cart ({cartCount})
           </button>
 
           <button

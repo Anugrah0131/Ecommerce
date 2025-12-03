@@ -1,154 +1,295 @@
+// Cart.jsx — PREMIUM GLASSMORPHIC DRAWER
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Trash2, Minus, Plus } from "lucide-react";
+import { Trash2, Minus, Plus, X, CreditCard, Tag, Truck } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function Cart() {
   const [cart, setCart] = useState([]);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [couponInput, setCouponInput] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [showCheckout, setShowCheckout] = useState(false);
+
+  const GST_RATE = 0.18;
+  const FREE_DELIVERY_THRESHOLD = 4000;
+  const DELIVERY_FEE = 79;
+
+  const VALID_COUPONS = [
+    { code: "SAVE10", type: "percent", amount: 10 },
+    { code: "FLAT500", type: "fixed", amount: 500 },
+    { code: "FREESHIP", type: "freeShip", amount: 0 },
+  ];
 
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem("cart")) || [];
+    const savedCoupon = JSON.parse(localStorage.getItem("cart_coupon")) || null;
+
     setCart(stored);
+    setAppliedCoupon(savedCoupon);
+    setCouponInput(savedCoupon?.code || "");
   }, []);
 
-  const showToast = (message, type = "info") => {
-    const toast = document.createElement("div");
-    toast.className = `
-      fixed top-5 right-5 px-5 py-3 rounded-xl shadow-xl z-50 
-      text-white font-semibold animate-slide 
-      ${
-        type === "error"
-          ? "bg-red-600"
-          : type === "success"
-          ? "bg-green-600"
-          : "bg-blue-600"
-      }
-    `;
-    toast.innerText = message;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 1800);
+  const persistCart = (updated) => {
+    setCart(updated);
+    localStorage.setItem("cart", JSON.stringify(updated));
   };
 
-  const updateQuantity = (id, amount) => {
+  const showToast = (msg, type = "info") => {
+    const t = document.createElement("div");
+    t.className = `
+      fixed top-6 right-6 z-50 px-5 py-3 rounded-2xl text-white shadow-xl 
+      backdrop-blur-xl font-semibold tracking-wide
+      ${type === "error" ? "bg-red-500/90" : ""}
+      ${type === "success" ? "bg-green-500/90" : ""}
+      ${type === "info" ? "bg-indigo-500/90" : ""}
+    `;
+    t.innerText = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 1800);
+  };
+
+  const updateQuantity = (id, amt) => {
     const updated = cart.map((item) => {
       if (item._id === id) {
-        const newQty = Math.max(1, item.quantity + amount);
-        if (newQty !== item.quantity)
-          showToast(`Quantity updated to ${newQty}`, "success");
-        return { ...item, quantity: newQty };
+        const q = Math.max(1, item.quantity + amt);
+        return { ...item, quantity: q };
       }
       return item;
     });
-
-    setCart(updated);
-    localStorage.setItem("cart", JSON.stringify(updated));
+    persistCart(updated);
   };
 
   const removeItem = (id) => {
-    const updated = cart.filter((item) => item._id !== id);
-    setCart(updated);
-    localStorage.setItem("cart", JSON.stringify(updated));
+    const updated = cart.filter((i) => i._id !== id);
+    persistCart(updated);
     showToast("Item removed", "error");
   };
 
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const fmt = (v) => `₹${v.toLocaleString()}`;
 
-  if (cart.length === 0)
-    return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-700 mb-4">
-          Your cart is empty 🛒
-        </h1>
-        <p className="text-gray-500 text-lg md:text-xl mb-6 max-w-md">
-          Looks like you haven't added anything yet.
-        </p>
-        <Link
-          to="/"
-          className="bg-gradient-to-r from-purple-400 to-pink-400 text-black px-8 py-3 rounded-2xl font-semibold shadow-lg hover:opacity-90 transition text-lg"
-        >
-          Go to Home
-        </Link>
-      </div>
+  const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+
+  const discount = appliedCoupon
+    ? appliedCoupon.type === "percent"
+      ? Math.round((subtotal * appliedCoupon.amount) / 100)
+      : appliedCoupon.type === "fixed"
+      ? appliedCoupon.amount
+      : 0
+    : 0;
+
+  const taxable = subtotal - discount;
+  const gst = Math.round(taxable * GST_RATE);
+  const delivery = subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_FEE;
+  const grandTotal = taxable + gst + delivery;
+
+  const applyCoupon = () => {
+    const c = VALID_COUPONS.find(
+      (x) => x.code.toLowerCase() === couponInput.toLowerCase()
     );
+    if (!c) return showToast("Invalid coupon", "error");
+
+    setAppliedCoupon(c);
+    localStorage.setItem("cart_coupon", JSON.stringify(c));
+    showToast("Coupon applied", "success");
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    localStorage.removeItem("cart_coupon");
+    setCouponInput("");
+    showToast("Coupon removed", "info");
+  };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-12">
-      <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-10 text-center md:text-left">
-        Your Cart
-      </h1>
+    <>
+      {/* Floating Cart Button — USE THIS IN NAVBAR */}
+      <button
+        onClick={() => setDrawerOpen(true)}
+        className="hidden"
+        id="openCartDrawerButton"
+      ></button>
 
-      <div className="space-y-6">
-        <AnimatePresence>
-          {cart.map((item) => (
+      {/* Drawer */}
+      <AnimatePresence>
+        {drawerOpen && (
+          <>
             <motion.div
-              key={item._id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, x: 50 }}
-              transition={{ duration: 0.3 }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-center gap-6 p-5 rounded-3xl bg-white/70 backdrop-blur-md border border-gray-200 shadow-lg hover:shadow-xl transition"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.45 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setDrawerOpen(false)}
+              className="fixed inset-0 bg-black z-40"
+            />
+
+            <motion.aside
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", stiffness: 260, damping: 25 }}
+              className="
+                fixed right-0 top-0 h-full w-full sm:w-[430px] z-50 
+                bg-white/10 backdrop-blur-2xl
+                border-l border-white/20 shadow-2xl
+                p-6 overflow-y-auto
+              "
             >
-              {/* LEFT SECTION */}
-              <div className="flex items-center gap-5">
-                <img
-                  src={item.image}
-                  className="w-24 h-24 md:w-28 md:h-28 rounded-2xl object-cover shadow-md"
-                />
-                <div>
-                  <h2 className="text-lg md:text-xl font-semibold text-gray-800">
-                    {item.title}
-                  </h2>
-                  <p className="text-blue-600 font-bold text-lg">₹{item.price}</p>
-                </div>
-              </div>
-
-              {/* QUANTITY + REMOVE */}
-              <div className="flex items-center justify-between md:justify-end gap-6 col-span-1 md:col-span-1">
-                {/* QUANTITY CONTROL */}
-                <div className="flex items-center bg-gray-100 rounded-full px-4 py-2 shadow-inner">
-                  <button
-                    onClick={() => updateQuantity(item._id, -1)}
-                    disabled={item.quantity === 1}
-                    className={`w-9 h-9 flex items-center justify-center bg-white rounded-full shadow hover:bg-gray-100 transition ${
-                      item.quantity === 1 ? "opacity-50 cursor-not-allowed" : ""
-                    }`}
-                  >
-                    <Minus size={18} />
-                  </button>
-
-                  <span className="px-4 text-lg font-semibold">{item.quantity}</span>
-
-                  <button
-                    onClick={() => updateQuantity(item._id, 1)}
-                    className="w-9 h-9 flex items-center justify-center bg-white rounded-full shadow hover:bg-gray-100 transition"
-                  >
-                    <Plus size={18} />
-                  </button>
-                </div>
-
-                {/* REMOVE BUTTON */}
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-3xl font-extrabold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
+                  Your Cart
+                </h3>
                 <button
-                  onClick={() => removeItem(item._id)}
-                  className="flex items-center gap-2 bg-red-500 text-white px-5 py-2 rounded-2xl shadow hover:bg-red-600 transition font-medium"
+                  onClick={() => setDrawerOpen(false)}
+                  className="p-2 hover:bg-white/10 rounded-xl transition"
                 >
-                  <Trash2 size={18} /> Remove
+                  <X size={22} className="text-gray-700 dark:text-white" />
                 </button>
               </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
 
-      {/* TOTAL BAR */}
-      <div className="mt-12 p-6 bg-white/70 backdrop-blur-lg shadow-xl rounded-3xl border border-gray-200 text-center md:text-right">
-        <h2 className="text-3xl font-bold text-gray-800">
-          Total: ₹{total.toLocaleString()}
-        </h2>
+              {/* Items */}
+              <div className="space-y-4">
+                {cart.length === 0 ? (
+                  <div className="text-center py-20">
+                    <h4 className="text-xl font-semibold">Your cart is empty</h4>
+                    <p className="text-gray-500 mt-2">Add items to begin</p>
+                    <Link
+                      to="/"
+                      onClick={() => setDrawerOpen(false)}
+                      className="mt-4 inline-block px-6 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-xl"
+                    >
+                      Continue Shopping
+                    </Link>
+                  </div>
+                ) : (
+                  cart.map((item) => (
+                    <motion.div
+                      key={item._id}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="
+                        p-4 rounded-2xl bg-white/20 backdrop-blur-xl 
+                        border border-white/30 shadow-lg flex gap-4
+                      "
+                    >
+                      <img
+                        src={item.image}
+                        className="w-20 h-20 rounded-xl object-cover shadow"
+                      />
 
-        <button className="mt-5 bg-green-600 text-white px-10 py-3 rounded-2xl shadow-lg hover:bg-green-700 transition text-lg font-semibold">
-          Checkout
-        </button>
-      </div>
-    </div>
+                      <div className="flex-1">
+                        <h4 className="font-semibold line-clamp-2">
+                          {item.title}
+                        </h4>
+
+                        <div className="mt-3 flex justify-between items-center">
+                          {/* Qty */}
+                          <div className="flex items-center gap-2 bg-white/20 px-3 py-1 rounded-full">
+                            <button
+                              onClick={() => updateQuantity(item._id, -1)}
+                              disabled={item.quantity === 1}
+                            >
+                              <Minus size={14} />
+                            </button>
+                            <span className="font-semibold">{item.quantity}</span>
+                            <button
+                              onClick={() => updateQuantity(item._id, 1)}
+                            >
+                              <Plus size={14} />
+                            </button>
+                          </div>
+
+                          {/* Price + Remove */}
+                          <div className="text-right">
+                            <p className="font-bold text-purple-600">
+                              {fmt(item.price * item.quantity)}
+                            </p>
+                            <button
+                              onClick={() => removeItem(item._id)}
+                              className="text-red-500 text-xs flex items-center gap-1"
+                            >
+                              <Trash2 size={14} /> Remove
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))
+                )}
+              </div>
+
+              {/* Coupon */}
+              <div className="mt-6 p-4 bg-white/20 backdrop-blur-xl rounded-2xl border border-white/30">
+                <div className="flex items-center gap-3">
+                  <Tag />
+                  <div>
+                    <div className="font-semibold">Apply Coupon</div>
+                    <p className="text-sm text-gray-600">Get discounts</p>
+                  </div>
+                </div>
+
+                <div className="mt-3 flex gap-3">
+                  <input
+                    value={couponInput}
+                    onChange={(e) => setCouponInput(e.target.value)}
+                    className="flex-1 px-4 py-2 rounded-xl bg-white/40 border"
+                  />
+                  {!appliedCoupon ? (
+                    <button
+                      onClick={applyCoupon}
+                      className="px-4 py-2 rounded-xl bg-indigo-600 text-white"
+                    >
+                      Apply
+                    </button>
+                  ) : (
+                    <button
+                      onClick={removeCoupon}
+                      className="px-4 py-2 rounded-xl bg-red-500 text-white"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Price Boxes */}
+              <div className="mt-6 p-4 rounded-2xl bg-white/20 backdrop-blur-xl border border-white/30">
+                <div className="flex justify-between text-gray-700">
+                  <span>Subtotal</span>
+                  <span>{fmt(subtotal)}</span>
+                </div>
+                <div className="flex justify-between mt-2 text-green-600">
+                  <span>Discount</span>
+                  <span>-{fmt(discount)}</span>
+                </div>
+                <div className="flex justify-between mt-2">
+                  <span>GST (18%)</span>
+                  <span>{fmt(gst)}</span>
+                </div>
+                <div className="flex justify-between mt-2">
+                  <span>Delivery Fee</span>
+                  <span>{delivery === 0 ? "Free" : fmt(delivery)}</span>
+                </div>
+
+                <div className="border-t mt-3 mb-3" />
+
+                <div className="flex justify-between font-bold text-lg">
+                  <span>Total</span>
+                  <span>{fmt(grandTotal)}</span>
+                </div>
+              </div>
+
+              <div className="mt-5">
+                <button
+                  onClick={() => setShowCheckout(true)}
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold shadow-xl"
+                >
+                  Proceed to Checkout
+                </button>
+              </div>
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

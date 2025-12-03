@@ -109,27 +109,27 @@ export default function CategoryView() {
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-8">
                   {products.map((p) => (
-                    <motion.div
-                      whileHover={{ scale: 1.05 }}
-                      key={p._id}
-                      className="bg-white rounded-3xl p-5 shadow-lg border border-gray-100 hover:shadow-2xl transition cursor-pointer"
-                    >
-                      <Link to={`/product/${p._id}`}>
-                        <div className="w-full h-48 bg-gray-100 rounded-2xl overflow-hidden">
-                          <img
-                            src={getImageUrl(p.image)}
-                            className="object-cover w-full h-full"
-                          />
-                        </div>
+      <Link to={`/details/${p._id}`} key={p._id}>
+  <motion.div
+    whileHover={{ scale: 1.05 }}
+    className="bg-white rounded-3xl p-5 shadow-lg border border-gray-100 hover:shadow-2xl transition cursor-pointer"
+  >
+    <div className="w-full h-48 bg-gray-100 rounded-2xl overflow-hidden">
+      <img
+        src={getImageUrl(p.image)}
+        className="object-cover w-full h-full"
+      />
+    </div>
 
-                        <h3 className="mt-4 font-semibold text-gray-800 line-clamp-2">
-                          {p.title}
-                        </h3>
-                        <p className="text-purple-600 font-bold text-xl mt-2">
-                          ₹{p.price}
-                        </p>
-                      </Link>
-                    </motion.div>
+    <h3 className="mt-4 font-semibold text-gray-800 line-clamp-2">
+      {p.title}
+    </h3>
+
+    <p className="text-purple-600 font-bold text-xl mt-2">₹{p.price}</p>
+  </motion.div>
+</Link>
+
+
                   ))}
                 </div>
               )}
