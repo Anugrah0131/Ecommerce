@@ -11,7 +11,7 @@ function Card({ id, title, price, image, category, badge }) {
       whileHover={{ scale: 1.03 }}
       transition={{ type: "spring", stiffness: 200, damping: 15 }}
       className="
-        relative w-80 sm:w-96 
+        relative w-64 sm:w-72
         rounded-3xl 
         bg-gradient-to-br from-indigo-900/20 via-purple-900/10 to-indigo-900/20
         backdrop-blur-2xl 
@@ -23,7 +23,6 @@ function Card({ id, title, price, image, category, badge }) {
         transition-all
       "
     >
-      {/* Wishlist Button */}
       <button
         className="
           absolute top-4 right-4 
@@ -40,7 +39,6 @@ function Card({ id, title, price, image, category, badge }) {
         <Heart className="w-5 h-5" />
       </button>
 
-      {/* Badge */}
       {badge && (
         <span className="
           absolute top-4 left-4 
@@ -55,8 +53,7 @@ function Card({ id, title, price, image, category, badge }) {
         </span>
       )}
 
-      {/* Product Image */}
-      <Link to={`/details/${id}`} className="block w-full h-64 overflow-hidden">
+      <Link to={`/details/${id}`} className="block w-full h-56 overflow-hidden">
         {image ? (
           <img
             src={image}
@@ -70,36 +67,32 @@ function Card({ id, title, price, image, category, badge }) {
         )}
       </Link>
 
-      {/* Product Info */}
-      <div className="p-6 flex flex-col flex-1 justify-between">
+      <div className="p-5 flex flex-col flex-1 justify-between">
         <div className="text-center">
-          <h2 className="text-lg sm:text-xl font-bold text-white truncate">{title}</h2>
-          <p className="text-purple-300 text-sm sm:text-base mt-1">{category}</p>
-          <p className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent mt-2">
+          <h2 className="text-lg font-bold text-white truncate">{title}</h2>
+          <p className="text-purple-300 text-sm mt-1">{category}</p>
+          <p className="text-2xl font-bold bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent mt-2">
             ₹{price}
           </p>
         </div>
 
-        {/* Buttons */}
-        <div className="mt-5 flex gap-4 justify-center">
-          {/* View Button */}
+        <div className="mt-4 flex gap-3 justify-center">
           <Link
             to={`/details/${id}`}
             className="
-              flex items-center justify-center flex-1 py-3 rounded-2xl
+              flex items-center justify-center w-24 py-2.5 rounded-xl
               bg-gradient-to-r from-pink-500 to-purple-500 
               text-white font-semibold shadow-xl
               transition-transform transform hover:scale-105
             "
           >
-            <Eye className="w-5 h-5 mr-2" /> View
+            <Eye className="w-5 h-5 mr-1" /> View
           </Link>
 
-          {/* Add to Cart */}
           <AddToCartButton
             product={{ _id: id, title, price, image, category }}
             className="
-              flex-1 py-3 rounded-2xl shadow-xl
+              w-24 py-2.5 rounded-xl shadow-xl
               transition-transform transform hover:scale-105
             "
           />

@@ -54,10 +54,11 @@ function Table() {
 
     if (typeof img === "string") {
       if (img.startsWith("http")) return img;
-      if (img.startsWith("/")) return `${BACKEND_BASE}${img}`;
-      return `${BACKEND_BASE}/uploads/${img}`;
+      if (img.startsWith("/")) return `${BACKEND_BASE}${img}?t=${Date.now()}`; // prevent caching
+      return `${BACKEND_BASE}/uploads/${img}?t=${Date.now()}`; // prevent caching
     }
 
+    // If it's a new file preview
     return previewUrl;
   };
 
@@ -149,7 +150,13 @@ function Table() {
       const saved = await res.json();
 
       if (editingId) {
-        setProducts((prev) => prev.map((p) => (p._id === editingId ? saved : p)));
+        setProducts((prev) =>
+          prev.map((p) =>
+            p._id === editingId
+              ? { ...saved, image: saved.image || p.image } // ensure updated image
+              : p
+          )
+        );
         alert("Product updated");
       } else {
         setProducts((prev) => [...prev, saved]);
@@ -340,10 +347,7 @@ function Table() {
                   <td className="px-4 py-3">₹ {item.price}</td>
                   <td className="px-4 py-3">{item.category?.name}</td>
                   <td className="px-4 py-3 flex gap-3 justify-center">
-                    <button
-                      onClick={() => startEditing(item)}
-                      className="text-blue-600"
-                    >
+                    <button onClick={() => startEditing(item)} className="text-blue-600">
                       Edit
                     </button>
                     <button

@@ -8,6 +8,7 @@ export default function Home() {
   const [featured, setFeatured] = useState([]);
   const navigate = useNavigate();
 
+  // Fetch categories
   const fetchCategories = async () => {
     try {
       const res = await fetch("http://localhost:8080/api/categories");
@@ -20,6 +21,7 @@ export default function Home() {
     }
   };
 
+  // Fetch featured products
   const fetchFeaturedProducts = async () => {
     try {
       const res = await fetch("http://localhost:8080/api/products");
@@ -36,11 +38,9 @@ export default function Home() {
     fetchFeaturedProducts();
   }, []);
 
-  // ---------- SLIDER IMAGES (UPDATED) ----------
+  // Slider images
   const images = Object.values(
-    import.meta.glob("../assets/*.{jpg,jpeg,png,webp}", {
-      eager: true,
-    })
+    import.meta.glob("../assets/*.{jpg,jpeg,png,webp}", { eager: true })
   ).map((img) => img.default);
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -50,7 +50,6 @@ export default function Home() {
     autoRef.current = setTimeout(() => {
       setCurrentIndex((prev) => (prev + 1) % images.length);
     }, 3800);
-
     return () => clearTimeout(autoRef.current);
   }, [currentIndex, images.length]);
 
@@ -58,6 +57,7 @@ export default function Home() {
     clearTimeout(autoRef.current);
     setCurrentIndex((prev) => (prev + 1) % images.length);
   };
+
   const prev = () => {
     clearTimeout(autoRef.current);
     setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
@@ -65,9 +65,7 @@ export default function Home() {
 
   return (
     <div className="w-full min-h-screen bg-[#fafaff] text-gray-800 font-inter">
-      {/* =============================== */}
-      {/* HERO — AUTO SLIDER */}
-      {/* =============================== */}
+      {/* HERO SLIDER */}
       <section className="relative w-full overflow-hidden">
         <div className="absolute -left-16 -top-8 w-72 h-72 bg-pink-300/30 blur-[130px] rounded-full pointer-events-none" />
         <div className="absolute -right-16 bottom-8 w-96 h-96 bg-purple-300/25 blur-[150px] rounded-full pointer-events-none" />
@@ -123,11 +121,9 @@ export default function Home() {
             </motion.div>
 
             <div className="grid grid-cols-3 gap-6 max-w-sm mt-8">
-              {[
-                { icon: Truck, title: "Fast", sub: "Across India" },
+              {[{ icon: Truck, title: "Fast", sub: "Across India" },
                 { icon: ShieldCheck, title: "Secure", sub: "Safe Payments" },
-                { icon: Headphones, title: "Support", sub: "24/7" },
-              ].map((item, i) => {
+                { icon: Headphones, title: "Support", sub: "24/7" }].map((item, i) => {
                 const Icon = item.icon;
                 return (
                   <div key={i} className="flex items-center gap-3">
@@ -190,9 +186,7 @@ export default function Home() {
                   <button
                     key={i}
                     onClick={() => setCurrentIndex(i)}
-                    className={`w-3 h-3 rounded-full transition ${
-                      currentIndex === i ? "bg-white" : "bg-white/40"
-                    }`}
+                    className={`w-3 h-3 rounded-full transition ${currentIndex === i ? "bg-white" : "bg-white/40"}`}
                   />
                 ))}
               </div>
@@ -201,17 +195,12 @@ export default function Home() {
         </div>
       </section>
 
-
-      {/* ========================= */}
-      {/* SHOP BY CATEGORY — GLASS */}
-      {/* ========================= */}
+      {/* SHOP BY CATEGORY */}
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl font-bold text-gray-900">Shop by Category</h2>
-            <Link to="/categoryview" className="text-sm text-purple-600 hover:underline">
-              See all categories
-            </Link>
+            <Link to="/categoryview" className="text-sm text-purple-600 hover:underline">See all categories</Link>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
@@ -238,16 +227,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ============================== */}
-      {/* FEATURED PRODUCTS — GEN Z CARD */}
-      {/* ============================== */}
+      {/* FEATURED PRODUCTS */}
       <section className="py-16 bg-gradient-to-b from-white to-purple-50/10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl font-bold text-gray-900">Featured Products</h2>
-            <Link to="/products" className="text-sm text-purple-600 hover:underline">
-              View all
-            </Link>
+            <Link to="/products" className="text-sm text-purple-600 hover:underline">View all</Link>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
@@ -266,30 +251,19 @@ export default function Home() {
                   <div className="w-full h-52 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center mb-4">
                     <img src={p.image} alt={p.title} className="object-contain w-full h-full" />
                   </div>
-
                   <h3 className="font-semibold text-gray-800 line-clamp-2">{p.title}</h3>
                   <p className="text-purple-600 font-bold text-xl mt-2">₹ {p.price}</p>
 
                   <div className="mt-4 flex gap-3">
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/details/${p._id}`);
-                      }}
+                      onClick={(e) => { e.stopPropagation(); navigate(`/details/${p._id}`); }}
                       className="flex-1 py-2 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-white font-medium shadow-md"
-                    >
-                      View
-                    </button>
+                    >View</button>
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        // keep behaviour simple (wishlist placeholder)
-                      }}
+                      onClick={(e) => { e.stopPropagation(); }}
                       className="w-12 h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center shadow-sm"
                       title="Add to wishlist"
-                    >
-                      ❤
-                    </button>
+                    >❤</button>
                   </div>
                 </motion.div>
               ))
@@ -298,9 +272,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ============================ */}
-      {/* WHY CHOOSE US — SOFT CARDS */}
-      {/* ============================ */}
+      {/* WHY CHOOSE US */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-6">
           <motion.h2
@@ -313,12 +285,10 @@ export default function Home() {
           </motion.h2>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {[
-              { icon: Truck, title: "Fast Delivery", desc: "Get your orders delivered quickly and safely." },
+            {[{ icon: Truck, title: "Fast Delivery", desc: "Get your orders delivered quickly and safely." },
               { icon: ShieldCheck, title: "Secure Payments", desc: "Encrypted and trusted checkout." },
               { icon: Star, title: "Premium Quality", desc: "Only top-rated, handpicked items." },
-              { icon: Headphones, title: "24/7 Support", desc: "We are here when you need us." },
-            ].map((card, idx) => {
+              { icon: Headphones, title: "24/7 Support", desc: "We are here when you need us." }].map((card, idx) => {
               const Icon = card.icon;
               return (
                 <motion.div
@@ -338,9 +308,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ============================ */}
       {/* FOOTER */}
-      {/* ============================ */}
       <footer className="bg-gray-900 text-gray-300">
         <div className="max-w-7xl mx-auto px-6 py-16 grid md:grid-cols-4 gap-8">
           <div>
