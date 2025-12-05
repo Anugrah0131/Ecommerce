@@ -1,270 +1,197 @@
-import React, { useEffect, useState, useRef } from "react";
-import { useNavigate, Link } from "react-router-dom";
+// Profile.jsx — Realistic E‑Commerce Profile Page
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { LogOut, Camera } from "lucide-react";
+import { User, Mail, MapPin, Package, CreditCard, Phone, Save, Trash2, ShieldCheck } from "lucide-react";
 
 export default function Profile() {
   const navigate = useNavigate();
-  const fileInputRef = useRef(null);
-
-  const [user, setUser] = useState(null);
   const [profile, setProfile] = useState({
-    fullName: "",
+    name: "",
+    email: "",
     phone: "",
     address: "",
-    bio: "",
+    city: "",
+    pincode: "",
   });
-  const [avatar, setAvatar] = useState(null); // base64 string
-  const [loading, setLoading] = useState(false);
 
+  const [paymentMethods, setPaymentMethods] = useState([
+    { id: 1, brand: "Visa", last4: "4242" },
+    { id: 2, brand: "Mastercard", last4: "5511" },
+  ]);
+
+  const [orders, setOrders] = useState([
+    { id: "ORD7342", date: "2025-01-22", total: 1299, status: "Delivered" },
+    { id: "ORD7231", date: "2025-01-18", total: 899, status: "Shipped" },
+    { id: "ORD7194", date: "2025-01-12", total: 499, status: "Processing" },
+  ]);
+
+  // Load from localStorage
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    const storedProfile = JSON.parse(localStorage.getItem("profile"));
-    const storedAvatar = localStorage.getItem("avatar");
-
-    if (!storedUser) return setUser(null);
-    setUser(storedUser);
-
-    if (storedProfile) setProfile(storedProfile);
-    if (storedAvatar) setAvatar(storedAvatar);
+    const stored = JSON.parse(localStorage.getItem("user_profile"));
+    if (stored) setProfile(stored);
   }, []);
 
-  const handleChange = (e) => {
-    setProfile({ ...profile, [e.target.name]: e.target.value });
-  };
-
-  const handleAvatarPick = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const base64 = ev.target.result;
-      setAvatar(base64);
-      localStorage.setItem("avatar", base64);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const triggerFile = () => fileInputRef.current?.click();
-
+  // Save to localStorage
   const handleSave = () => {
-    setLoading(true);
-    try {
-      localStorage.setItem("profile", JSON.stringify(profile));
-      // avatar already saved on pick
-      setLoading(false);
-      // subtle UI feedback — could replace with toast later
-      alert("Profile saved successfully");
-    } catch (err) {
-      setLoading(false);
-      alert("Could not save profile. Try again.");
-    }
+    localStorage.setItem("user_profile", JSON.stringify(profile));
+    alert("Profile updated!");
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    // keep profile & avatar if you want, but here we clear them
-    // localStorage.removeItem("profile");
-    // localStorage.removeItem("avatar");
-    navigate("/login");
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setProfile((prev) => ({ ...prev, [name]: value }));
   };
-if (!user) {
+
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 
-      bg-[radial-gradient(circle_at_20%_20%,#e8e9ff,#ffffff,#e6e9ff)] relative overflow-hidden">
+    <div className="max-w-5xl mx-auto p-6 mt-6">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">My Account</h1>
+    <button
+        onClick={() => {
+           localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            localStorage.removeItem("user_profile");
+            navigate("/login");
+            window.dispatchEvent(new Event("storage")); // forces navbar refresh
+      }}
+         className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+     >
+      Logout
+      </button>
 
-      {/* floating background blobs */}
-      <div className="absolute -top-20 -left-20 w-72 h-72 bg-indigo-300/30 blur-3xl rounded-full"></div>
-      <div className="absolute bottom-0 right-0 w-72 h-72 bg-purple-300/30 blur-3xl rounded-full"></div>
-
-      <div className="relative w-full max-w-md p-10 rounded-3xl 
-        backdrop-blur-2xl bg-white/60 border border-white/30 
-        shadow-[0_8px_35px_rgba(0,0,0,0.08)]">
-
-        {/* Icon */}
-        <div className="flex justify-center mb-4">
-          <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-500
-            rounded-2xl flex items-center justify-center shadow-lg">
-            <span className="text-white text-3xl">!</span>
-          </div>
-        </div>
-
-        <h2 className="text-2xl font-semibold text-gray-800 text-center">
-          No User Found
-        </h2>
-
-        <p className="text-center text-gray-600 mt-3 leading-relaxed">
-          You need to be logged in to access your profile.  
-          Please sign in to continue your journey.
-        </p>
-
-        {/* button */}
-        <div className="mt-6 flex justify-center">
-          <Link
-            to="/login"
-            className="px-6 py-3 rounded-xl font-semibold text-white 
-              bg-gradient-to-r from-indigo-600 to-purple-600 
-              shadow-lg hover:shadow-xl hover:scale-[1.03] 
-              transition-transform duration-300"
-          >
-            Go to Login
-          </Link>
-        </div>
       </div>
-    </div>
-  );
-}
 
+      {/* Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left: Profile Info */}
+        <motion.div layout className="lg:col-span-2 bg-white shadow rounded-xl p-6">
+          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2"><User size={18}/> Profile Details</h2>
 
-  return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-[#eef2ff] via-white to-[#e9f0ff] flex items-start justify-center py-12 px-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.45 }}
-        className="w-full max-w-xl bg-white/70 backdrop-blur-md border border-gray-200/40 rounded-2xl shadow-lg p-8"
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold text-gray-800">Your Profile</h1>
-            <p className="text-sm text-gray-500">Manage your account and personal info</p>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 text-sm px-3 py-2 rounded-lg hover:bg-gray-100 transition"
-            title="Logout"
-          >
-            <LogOut className="w-4 h-4" />
-            <span className="text-gray-700">Logout</span>
-          </button>
-        </div>
-
-        {/* Profile top */}
-        <div className="mt-6 flex flex-col items-center">
-          <div className="relative">
-            <div className="w-32 h-32 rounded-full bg-gradient-to-tr from-indigo-200 to-indigo-50 p-1">
-              <div className="w-full h-full rounded-full bg-white overflow-hidden flex items-center justify-center shadow-inner">
-                {avatar ? (
-                  <img src={avatar} alt="avatar" className="w-full h-full object-cover" />
-                ) : (
-                  <div className="text-indigo-500 text-xl font-medium">{user.email?.charAt(0).toUpperCase()}</div>
-                )}
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm text-gray-600">Full Name</label>
+              <input
+                name="name"
+                className="w-full mt-1 border rounded-xl px-4 py-3"
+                value={profile.name}
+                onChange={handleChange}
+                placeholder="Your name"
+              />
             </div>
 
-            <button
-              onClick={triggerFile}
-              className="absolute right-0 bottom-0 transform translate-x-1/4 translate-y-1/4 bg-white border border-gray-200 rounded-full p-2 shadow hover:scale-105 transition"
-              title="Change avatar"
-            >
-              <Camera className="w-4 h-4 text-gray-700" />
-            </button>
+            <div>
+              <label className="text-sm text-gray-600">Email</label>
+              <input
+                name="email"
+                type="email"
+                className="w-full mt-1 border rounded-xl px-4 py-3"
+                value={profile.email}
+                onChange={handleChange}
+                placeholder="you@example.com"
+              />
+            </div>
 
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleAvatarPick}
-            />
+            <div>
+              <label className="text-sm text-gray-600">Phone</label>
+              <input
+                name="phone"
+                className="w-full mt-1 border rounded-xl px-4 py-3"
+                value={profile.phone}
+                onChange={handleChange}
+                placeholder="9876543210"
+              />
+            </div>
           </div>
 
-          <h2 className="mt-4 text-lg font-semibold text-gray-800">{profile.fullName || user.name || "Your Name"}</h2>
-          <p className="text-sm text-gray-500 mt-1">{profile.bio || "Tell us something about yourself..."}</p>
+          <h3 className="text-lg font-semibold mt-6 mb-2 flex items-center gap-2"><MapPin size={18}/> Shipping Address</h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="md:col-span-2">
+              <label className="text-sm text-gray-600">Address</label>
+              <input
+                name="address"
+                className="w-full mt-1 border rounded-xl px-4 py-3"
+                value={profile.address}
+                onChange={handleChange}
+                placeholder="Street, area"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm text-gray-600">City</label>
+              <input
+                name="city"
+                className="w-full mt-1 border rounded-xl px-4 py-3"
+                value={profile.city}
+                onChange={handleChange}
+                placeholder="City"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm text-gray-600">Pincode</label>
+              <input
+                name="pincode"
+                className="w-full mt-1 border rounded-xl px-4 py-3"
+                value={profile.pincode}
+                onChange={handleChange}
+                placeholder="560001"
+              />
+            </div>
+          </div>
+
+          <button
+            onClick={handleSave}
+            className="mt-6 w-full bg-black text-white py-3 rounded-xl flex items-center justify-center gap-2"
+          >
+            <Save size={18}/> Save Changes
+          </button>
+        </motion.div>
+
+        {/* Right: Order History + Payment Methods */}
+        <div className="space-y-6">
+          {/* Order History */}
+          <div className="bg-white shadow rounded-xl p-6">
+            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2"><Package size={18}/> Recent Orders</h2>
+
+            <div className="space-y-3">
+              {orders.map((order) => (
+                <div key={order.id} className="border rounded-lg p-3 flex justify-between items-center">
+                  <div>
+                    <p className="font-medium">{order.id}</p>
+                    <p className="text-sm text-gray-600">{order.date}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-semibold">₹{order.total}</p>
+                    <p className="text-sm text-green-600">{order.status}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Account Security */}
+          <div className="bg-white shadow rounded-xl p-6">
+            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2"><ShieldCheck size={18}/> Security</h2>
+            <button className="w-full border rounded-xl py-3 mb-3 hover:bg-gray-50 transition">Change Password</button>
+            <button className="w-full border rounded-xl py-3 text-red-600 hover:bg-red-50 transition">Delete Account</button>
+          </div>
+
+          {/* Payment Methods */}
+          <div className="bg-white shadow rounded-xl p-6">
+            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2"><CreditCard size={18}/> Saved Cards</h2>
+            <div className="space-y-3">
+              {paymentMethods.map((card) => (
+                <div key={card.id} className="border rounded-lg p-3 flex justify-between items-center">
+                  <p>{card.brand} •••• {card.last4}</p>
+                  <Trash2 size={18} className="text-red-500 cursor-pointer" />
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-
-        <div className="mt-8 grid grid-cols-1 gap-4">
-          {/* Email (readonly) */}
-          <div>
-            <label className="text-xs text-gray-600 font-medium">Email</label>
-            <input
-              readOnly
-              value={user.email}
-              className="w-full mt-2 px-4 py-3 rounded-xl border bg-gray-100 cursor-not-allowed"
-            />
-          </div>
-
-          {/* Full name */}
-          <div>
-            <label className="text-xs text-gray-600 font-medium">Full Name</label>
-            <input
-              name="fullName"
-              value={profile.fullName}
-              onChange={handleChange}
-              placeholder="Your full name"
-              className="w-full mt-2 px-4 py-3 rounded-xl border focus:ring-2 focus:ring-indigo-200 outline-none"
-            />
-          </div>
-
-          {/* Phone */}
-          <div>
-            <label className="text-xs text-gray-600 font-medium">Phone</label>
-            <input
-              name="phone"
-              value={profile.phone}
-              onChange={handleChange}
-              placeholder="e.g. +91 98765 43210"
-              className="w-full mt-2 px-4 py-3 rounded-xl border focus:ring-2 focus:ring-indigo-200 outline-none"
-            />
-          </div>
-
-          {/* Address */}
-          <div>
-            <label className="text-xs text-gray-600 font-medium">Address</label>
-            <textarea
-              name="address"
-              value={profile.address}
-              onChange={handleChange}
-              rows={2}
-              placeholder="Your address"
-              className="w-full mt-2 px-4 py-3 rounded-xl border focus:ring-2 focus:ring-indigo-200 outline-none"
-            />
-          </div>
-
-          {/* Bio */}
-          <div>
-            <label className="text-xs text-gray-600 font-medium">Bio</label>
-            <textarea
-              name="bio"
-              value={profile.bio}
-              onChange={handleChange}
-              rows={2}
-              placeholder="A short bio to show on your profile"
-              className="w-full mt-2 px-4 py-3 rounded-xl border focus:ring-2 focus:ring-indigo-200 outline-none"
-            />
-          </div>
-
-          <div className="flex gap-3 mt-2">
-            <button
-              onClick={handleSave}
-              disabled={loading}
-              className="flex-1 py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 active:scale-95 transition"
-            >
-              {loading ? "Saving..." : "Save Profile"}
-            </button>
-
-            <button
-              onClick={() => {
-                // revert changes from storage
-                const storedProfile = JSON.parse(localStorage.getItem("profile")) || { fullName: "", phone: "", address: "", bio: "" };
-                setProfile(storedProfile);
-              }}
-              className="py-3 px-4 rounded-xl border border-gray-300 bg-white font-medium hover:bg-gray-50 transition"
-            >
-              Reset
-            </button>
-          </div>
-        </div>
-
-        <div className="mt-6 text-center text-sm text-gray-500">
-          <p>
-            Want to edit account settings? <Link to="/settings" className="text-indigo-600 font-semibold hover:underline">Go to Settings</Link>
-          </p>
-        </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
