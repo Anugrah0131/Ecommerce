@@ -61,11 +61,11 @@ export default function Home() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#fafaff] text-gray-800 font-inter">
+    <div className="w-full min-h-screen bg-[#fafaff] font-sans text-gray-900">
       {/* HERO SLIDER */}
       <section className="relative w-full overflow-hidden">
-        <div className="absolute -left-16 -top-8 w-52 md:w-72 h-52 md:h-72 bg-pink-300/30 blur-[130px] rounded-full pointer-events-none" />
-        <div className="absolute -right-16 bottom-8 w-72 md:w-96 h-72 md:h-96 bg-purple-300/25 blur-[150px] rounded-full pointer-events-none" />
+        <div className="absolute -left-16 -top-8 w-52 md:w-72 h-52 md:h-72 bg-pink-300/20 blur-[130px] rounded-full pointer-events-none" />
+        <div className="absolute -right-16 bottom-8 w-72 md:w-96 h-72 md:h-96 bg-purple-300/15 blur-[150px] rounded-full pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-24 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
           {/* LEFT TEXT */}
@@ -74,7 +74,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="px-3 py-1 rounded-full bg-white/70 backdrop-blur-md text-purple-600 text-sm shadow-sm border border-white/40"
+              className="px-3 py-1 rounded-full bg-white/70 backdrop-blur-md text-purple-700 text-sm shadow-sm border border-white/40 font-medium"
             >
               Minimal · Modern · Curated
             </motion.span>
@@ -83,7 +83,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7 }}
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mt-4 text-gray-900 max-w-full sm:max-w-lg"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mt-4 text-gray-900 tracking-tight font-serif"
             >
               Curated for your vibe
             </motion.h1>
@@ -92,9 +92,9 @@ export default function Home() {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.85 }}
-              className="text-gray-600 mt-4 max-w-full sm:max-w-md"
+              className="text-gray-700 mt-4 max-w-full sm:max-w-md font-medium"
             >
-              Everyday essentials, reimagined.
+              Everyday essentials, thoughtfully selected to match your lifestyle.
             </motion.p>
 
             <motion.div
@@ -105,13 +105,13 @@ export default function Home() {
             >
               <Link
                 to="/products"
-                className="px-6 py-3 rounded-full text-white bg-gradient-to-r from-pink-500 to-purple-500 shadow-lg hover:scale-[1.03] transition font-semibold text-center"
+                className="px-6 py-3 rounded-full text-white bg-gradient-to-r from-pink-500 to-purple-600 shadow-lg hover:scale-[1.03] transition font-semibold text-center"
               >
-                Explore now
+                Explore Now
               </Link>
               <Link
                 to="/categoryview"
-                className="px-6 py-3 rounded-full border border-gray-300 bg-white/50 backdrop-blur-md shadow-sm hover:bg-white transition text-center"
+                className="px-6 py-3 rounded-full border border-gray-300 bg-white/50 backdrop-blur-md shadow-sm hover:bg-white transition font-medium text-gray-800 text-center"
               >
                 Categories
               </Link>
@@ -125,10 +125,10 @@ export default function Home() {
                 return (
                   <div key={i} className="flex items-center gap-3">
                     <div className="p-3 rounded-xl bg-white shadow-sm border border-gray-100">
-                      <Icon className="w-5 h-5 text-purple-500" />
+                      <Icon className="w-5 h-5 text-purple-600" />
                     </div>
                     <div>
-                      <div className="text-sm font-semibold text-gray-800">{item.title}</div>
+                      <div className="text-sm font-semibold text-gray-900">{item.title}</div>
                       <div className="text-xs text-gray-500">{item.sub}</div>
                     </div>
                   </div>
@@ -150,7 +150,7 @@ export default function Home() {
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.99 }}
                       transition={{ duration: 0.8 }}
-                      className="w-full h-64 sm:h-80 md:h-96 lg:h-[520px] object-cover"
+                      className="w-full h-64 sm:h-80 md:h-96 lg:h-[520px] object-cover rounded-3xl"
                       alt={`hero-${idx}`}
                     />
                   ) : null
@@ -165,7 +165,7 @@ export default function Home() {
               <button
                 onClick={prev}
                 aria-label="previous"
-                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 p-2 sm:p-3 bg-white/30 backdrop-blur-md rounded-full shadow hover:bg-white/40 transition"
+                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 p-2 sm:p-3 bg-white/20 backdrop-blur-md rounded-full shadow hover:bg-white/30 transition"
               >
                 <ChevronLeft className="w-4 sm:w-5 h-4 sm:h-5 text-white" />
               </button>
@@ -173,7 +173,7 @@ export default function Home() {
               <button
                 onClick={next}
                 aria-label="next"
-                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 p-2 sm:p-3 bg-white/30 backdrop-blur-md rounded-full shadow hover:bg-white/40 transition"
+                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 p-2 sm:p-3 bg-white/20 backdrop-blur-md rounded-full shadow hover:bg-white/30 transition"
               >
                 <ChevronRight className="w-4 sm:w-5 h-4 sm:h-5 text-white" />
               </button>
@@ -196,8 +196,8 @@ export default function Home() {
       <section className="py-12 sm:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Shop by Category</h2>
-            <Link to="/categoryview" className="text-sm sm:text-base text-purple-600 hover:underline">See all categories</Link>
+            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-gray-900">Shop by Category</h2>
+            <Link to="/categoryview" className="text-sm sm:text-base text-purple-700 hover:underline font-medium">See all categories</Link>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-6">
@@ -211,12 +211,12 @@ export default function Home() {
                   key={cat._id}
                   whileHover={{ scale: 1.04 }}
                   onClick={() => navigate(`/category/${cat._id}`)}
-                  className="h-36 sm:h-40 bg-white/60 backdrop-blur-lg border border-white/40 rounded-3xl shadow-md cursor-pointer flex flex-col items-center justify-center gap-3 hover:shadow-xl transition w-full"
+                  className="h-36 sm:h-40 bg-white/50 backdrop-blur-lg border border-white/30 rounded-3xl shadow-md cursor-pointer flex flex-col items-center justify-center gap-3 hover:shadow-xl transition w-full"
                 >
                   <div className="w-16 h-16 rounded-full bg-gradient-to-br from-pink-50 to-purple-50 flex items-center justify-center overflow-hidden">
                     <img src={cat.image} alt={cat.name} className="w-full h-full object-cover" />
                   </div>
-                  <div className="text-sm sm:text-base font-medium text-gray-800 text-center">{cat.name}</div>
+                  <div className="text-sm sm:text-base font-medium text-gray-900 text-center">{cat.name}</div>
                 </motion.button>
               ))
             )}
@@ -228,8 +228,8 @@ export default function Home() {
       <section className="py-12 sm:py-16 bg-gradient-to-b from-white to-purple-50/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Featured Products</h2>
-            <Link to="/products" className="text-sm sm:text-base text-purple-600 hover:underline">View all</Link>
+            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-gray-900">Featured Products</h2>
+            <Link to="/products" className="text-sm sm:text-base text-purple-700 hover:underline font-medium">View all</Link>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
@@ -248,17 +248,17 @@ export default function Home() {
                   <div className="w-full h-40 sm:h-52 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center mb-4">
                     <img src={p.image} alt={p.title} className="object-contain w-full h-full" />
                   </div>
-                  <h3 className="font-semibold text-gray-800 line-clamp-2">{p.title}</h3>
-                  <p className="text-purple-600 font-bold text-lg sm:text-xl mt-2">₹ {p.price}</p>
+                  <h3 className="font-medium text-gray-900 line-clamp-2">{p.title}</h3>
+                  <p className="text-purple-700 font-bold text-lg sm:text-xl mt-2">₹ {p.price}</p>
 
                   <div className="mt-4 flex flex-col sm:flex-row gap-3">
                     <button
                       onClick={(e) => { e.stopPropagation(); navigate(`/details/${p._id}`); }}
-                      className="flex-1 py-2 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-white font-medium shadow-md text-center"
+                      className="flex-1 py-2 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 text-white font-medium shadow-md text-center"
                     >View</button>
                     <button
                       onClick={(e) => { e.stopPropagation(); }}
-                      className="w-12 h-12 sm:w-12 sm:h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center shadow-sm mt-2 sm:mt-0"
+                      className="w-12 h-12 sm:w-12 sm:h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center shadow-sm mt-2 sm:mt-0 text-red-500 hover:text-red-600 transition"
                       title="Add to wishlist"
                     >❤</button>
                   </div>
@@ -276,9 +276,9 @@ export default function Home() {
             initial={{ opacity: 0, y: 8 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 text-center mb-10"
+            className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-extrabold font-serif text-gray-900 text-center mb-10"
           >
-            Why Choose <span className="text-purple-600">ShopEase</span>
+            Why Choose <span className="text-purple-700">ShopEase</span>
           </motion.h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
@@ -294,10 +294,10 @@ export default function Home() {
                   className="bg-white rounded-3xl p-4 sm:p-6 shadow hover:shadow-2xl transition flex flex-col items-center text-center"
                 >
                   <div className="p-3 rounded-full bg-gradient-to-br from-pink-50 to-purple-50 mb-4">
-                    <Icon className="w-5 sm:w-6 h-5 sm:h-6 text-purple-600" />
+                    <Icon className="w-5 sm:w-6 h-5 sm:h-6 text-purple-700" />
                   </div>
-                  <h3 className="font-semibold text-base sm:text-lg">{card.title}</h3>
-                  <p className="text-xs sm:text-sm text-gray-500 mt-2">{card.desc}</p>
+                  <h3 className="font-semibold text-base sm:text-lg text-gray-900">{card.title}</h3>
+                  <p className="text-xs sm:text-sm text-gray-600 mt-2">{card.desc}</p>
                 </motion.div>
               );
             })}
@@ -345,7 +345,7 @@ export default function Home() {
                 placeholder="Enter your email"
                 className="w-full px-4 py-2 rounded-lg focus:outline-none text-gray-800"
               />
-              <button className="bg-gradient-to-r from-pink-500 to-purple-500 px-4 py-2 rounded-lg text-white font-semibold">Join</button>
+              <button className="bg-gradient-to-r from-pink-500 to-purple-600 px-4 py-2 rounded-lg text-white font-semibold hover:scale-[1.02] transition">Join</button>
             </div>
           </div>
         </div>
