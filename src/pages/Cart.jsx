@@ -33,6 +33,20 @@ export default function Cart() {
     } catch {}
   }, []);
 
+  useEffect(() => {
+  const syncCart = () => {
+    const stored = JSON.parse(localStorage.getItem("cart")) || [];
+    setCart(stored);
+  };
+
+  // Listen for updates
+  window.addEventListener("cartUpdated", syncCart);
+
+  // Cleanup
+  return () => window.removeEventListener("cartUpdated", syncCart);
+}, []);
+
+
   const persistCart = (updated) => {
     setCart(updated);
     localStorage.setItem("cart", JSON.stringify(updated));
@@ -62,11 +76,13 @@ export default function Cart() {
     });
 
     persistCart(updated);
+    window.dispatchEvent(new Event("cartUpdated"));
   };
 
   const removeItem = (id) => {
     const updated = cart.filter((i) => i._id !== id);
     persistCart(updated);
+    window.dispatchEvent(new Event("cartUpdated"));
     showToast("Item removed", "error");
   };
 
@@ -287,15 +303,25 @@ export default function Cart() {
               </div>
 
               <div className="mt-5">
-             <button
+    <button
   onClick={() => {
-    setDrawerOpen(false);   // close cart drawer
-    window.location.href = "/checkout"; // navigate to checkout page
+    if (cart.length === 0) {
+      showToast("Add at least one product to proceed", "error");
+      return;
+    }
+
+    setDrawerOpen(false);
+    window.location.href = "/checkout";
   }}
-  className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold shadow-xl"
+  className={`
+    w-full py-3 rounded-xl font-semibold shadow-xl
+    bg-gradient-to-r from-purple-600 to-pink-600 text-white
+    ${cart.length === 0 ? "opacity-50 cursor-not-allowed" : ""}
+  `}
 >
   Proceed to Checkout
 </button>
+
 
               </div>
             </motion.aside>

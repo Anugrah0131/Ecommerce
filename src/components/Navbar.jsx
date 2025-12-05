@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 function Navbar() {
   const navigate = useNavigate();
 
+  const user = JSON.parse(localStorage.getItem("user"));
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -158,13 +159,24 @@ function Navbar() {
 
 
           {/* LOGIN */}
-          <motion.button
-            onClick={() => navigate("/login")}
-            whileHover={{ scale: 1.06 }}
-            className="flex items-center gap-2 border border-purple-300 text-purple-300 px-5 py-2.5 rounded-full font-semibold hover:bg-purple-300 hover:text-black transition shadow-md"
-          >
-            <LogIn size={18} /> Login
-          </motion.button>
+          {user ? (
+  <motion.button
+    onClick={() => navigate("/profile")}
+    whileHover={{ scale: 1.06 }}
+    className="flex items-center gap-2 bg-purple-300 text-black px-5 py-2.5 rounded-full font-semibold shadow-md hover:bg-purple-400 transition"
+  >
+    {user.name?.split(" ")[0] || "Profile"}
+  </motion.button>
+) : (
+  <motion.button
+    onClick={() => navigate("/login")}
+    whileHover={{ scale: 1.06 }}
+    className="flex items-center gap-2 border border-purple-300 text-purple-300 px-5 py-2.5 rounded-full font-semibold hover:bg-purple-300 hover:text-black transition shadow-md"
+  >
+    <LogIn size={18} /> Login
+  </motion.button>
+)}
+
         </div>
 
         {/* MOBILE ICON */}
@@ -194,14 +206,24 @@ function Navbar() {
             <ShoppingCart size={18} /> Cart ({cartCount})
           </button>
 
-          <button
-            onClick={() => navigate("/login")}
-            className="w-full border border-purple-300 text-purple-300 py-2 rounded-full font-semibold hover:bg-purple-300 hover:text-black transition"
-          >
-            Login
-          </button>
-        </div>
-      </motion.div>
+           {user ? (
+  <button
+    onClick={() => navigate("/profile")}
+    className="w-full border border-purple-300 text-purple-300 py-2 rounded-full font-semibold hover:bg-purple-300 hover:text-black transition"
+  >
+    {user.name ? user.name.split(" ")[0] : "Profile"}
+  </button>
+         ) : (
+       <button
+       onClick={() => navigate("/login")}
+       className="w-full border border-purple-300 text-purple-300 py-2 rounded-full font-semibold hover:bg-purple-300 hover:text-black transition"
+       >
+       Login
+      </button>
+      )}
+
+          </div>
+       </motion.div>
     </nav>
   );
 }

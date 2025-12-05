@@ -23,6 +23,8 @@ export default function AddToCartButton({ product, className }) {
     localStorage.setItem("cart", JSON.stringify(stored));
     setCart(stored);
 
+    window.dispatchEvent(new Event("cartUpdated"));
+
     // Toast notification
     const toast = document.createElement("div");
     toast.className = `
