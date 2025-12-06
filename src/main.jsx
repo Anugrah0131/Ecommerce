@@ -21,6 +21,9 @@ import CategoryView from "./components/CategoryView";
 import Profile from "./pages/Profile";
 import Checkout from "./pages/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
+import OrderDetails from "./pages/OrderDetails";
+import OrderTracking from "./pages/OrderTracking";
+
 
 
 createRoot(document.getElementById("root")).render(
@@ -46,6 +49,10 @@ createRoot(document.getElementById("root")).render(
         <Route path="/profile" element={<Profile/>} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/order-success" element={<OrderSuccess />} />
+        <Route path="/order/:orderId" element={<OrderDetails />} />
+        <Route path="/track/:orderId" element={<OrderTracking />} />
+        
+      
 
 
         {/* Protected Routes */}
