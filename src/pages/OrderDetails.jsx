@@ -1,37 +1,73 @@
-// OrderDetails.jsx — Premium Order Details Page
+// OrderDetails.jsx — FIXED + BACKEND COMPATIBLE
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Package, MapPin, CreditCard, Wallet, Truck } from "lucide-react";
+import {
+  ArrowLeft,
+  Package,
+  MapPin,
+  CreditCard,
+  Wallet,
+  Truck,
+} from "lucide-react";
 
 export default function OrderDetails() {
   const { orderId } = useParams();
   const navigate = useNavigate();
 
   const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
 
+  // Fetch order from backend using orderId
   useEffect(() => {
-    const savedOrder = JSON.parse(localStorage.getItem("latest_order"));
+    async function loadOrder() {
+      try {
+        setLoading(true);
 
-    if (!savedOrder || savedOrder.orderId !== orderId) {
-      navigate("/");
-      return;
+        const res = await fetch(
+          `http://localhost:8080/api/orders/${orderId}`
+        );
+
+        if (res.ok) {
+          const data = await res.json();
+          setOrder(data);
+          localStorage.setItem("latest_order", JSON.stringify(data));
+          setLoading(false);
+          return;
+        }
+
+        // Fallback
+        const saved = JSON.parse(localStorage.getItem("latest_order"));
+        if (saved && saved._id === orderId) {
+          setOrder(saved);
+          setLoading(false);
+          return;
+        }
+
+        navigate("/");
+      } catch (err) {
+        console.error(err);
+        navigate("/");
+      }
     }
 
-    setOrder(savedOrder);
+    loadOrder();
   }, [orderId, navigate]);
 
-  if (!order)
+  if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center text-white">
         Loading...
       </div>
     );
 
+  if (!order) return null;
+
   const fmt = (v) => `₹${v.toLocaleString()}`;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 to-purple-900 py-10 px-4 text-white">
       <div className="max-w-4xl mx-auto">
+
         {/* Back Button */}
         <button
           onClick={() => navigate(-1)}
@@ -45,7 +81,8 @@ export default function OrderDetails() {
 
           {/* Order ID */}
           <p className="text-white/80 mb-6">
-            Order ID: <span className="font-bold text-white">{order.orderId}</span>
+            Order ID:{" "}
+            <span className="font-bold text-white">{order._id}</span>
           </p>
 
           {/* ITEMS */}
@@ -54,9 +91,9 @@ export default function OrderDetails() {
               <Package /> Items Ordered
             </h2>
 
-            {order.cart.map((item) => (
+            {(order.items || []).map((item, index) => (
               <div
-                key={item._id}
+                key={index}
                 className="flex justify-between border-b border-white/10 py-3"
               >
                 <span>
@@ -74,10 +111,10 @@ export default function OrderDetails() {
             </h2>
 
             <p className="text-white/80 leading-relaxed">
-              {order.form.fullName} <br />
-              {order.form.address}, {order.form.city} <br />
-              {order.form.state} - {order.form.pincode} <br />
-              Phone: {order.form.phone}
+              {order.shipping.fullName} <br />
+              {order.shipping.address}, {order.shipping.city} <br />
+              {order.shipping.state} - {order.shipping.pincode} <br />
+              Phone: {order.shipping.phone}
             </p>
           </div>
 
@@ -107,14 +144,15 @@ export default function OrderDetails() {
               <Wallet /> Price Summary
             </h2>
             <p className="text-white/80 text-lg font-semibold">
-              Total Paid: <span className="text-white">{fmt(order.grandTotal)}</span>
+              Total Paid:{" "}
+              <span className="text-white">{fmt(order.amount)}</span>
             </p>
           </div>
 
           {/* BUTTONS */}
           <div className="flex gap-4 mt-8">
             <button
-              onClick={() => navigate(`/track/${order.orderId}`)}
+              onClick={() => navigate(`/track/${order._id}`)}
               className="flex-1 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold text-lg shadow-lg hover:scale-105 transition"
             >
               Track Order

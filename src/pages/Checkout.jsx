@@ -144,32 +144,49 @@ export default function Checkout() {
   }, [cart, appliedCoupon]);
 
   // stable callbacks to avoid re-creating on each render
-  const handlePlaceOrder = useCallback(() => {
-    // validation
-    if (!fullName.trim()) return alert("Please enter Full Name");
-    if (!phone.trim()) return alert("Please enter Phone Number");
-    if (!address.trim()) return alert("Please enter Address");
-    if (!city.trim()) return alert("Please enter City");
-    if (!stateName.trim()) return alert("Please enter State");
-    if (!pincode.toString().trim()) return alert("Please enter Pincode");
+  const handlePlaceOrder = useCallback(async () => {
+  if (!fullName.trim()) return alert("Please enter Full Name");
+  if (!phone.trim()) return alert("Please enter Phone Number");
+  if (!address.trim()) return alert("Please enter Address");
+  if (!city.trim()) return alert("Please enter City");
+  if (!stateName.trim()) return alert("Please enter State");
+  if (!pincode.toString().trim()) return alert("Please enter Pincode");
 
-    const order = {
-      form: { fullName, phone, address, city, state: stateName, pincode },
-      cart,
-      totals,
-      createdAt: new Date().toISOString(),
-    };
+  const body = {
+    userId: "guest",
+    paymentMethod: "cod",
+    amount: totals.grandTotal,
+    shipping: { fullName, phone, address, city, state: stateName, pincode },
 
-    try {
-      localStorage.setItem("order_details", JSON.stringify(order));
-      localStorage.removeItem("cart");
-    } catch (err) {
-      console.error("Failed to save order", err);
-    }
+    items: cart.map((i) => ({
+      productId: i._id || i.productId,
+      title: i.title || i.name,
+      price: i.price,
+      quantity: i.quantity,
+      image: i.image,
+    })),
+  };
 
-    // navigate after writing to storage
+  try {
+    const res = await fetch("http://localhost:8080/api/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    const saved = await res.json();
+
+    // save returned order in localStorage
+    localStorage.setItem("latest_order", JSON.stringify(saved));
+    localStorage.removeItem("cart");
+
     navigate("/order-success");
-  }, [fullName, phone, address, city, stateName, pincode, cart, totals, navigate]);
+  } catch (err) {
+    console.error("Order error:", err);
+    alert("Order failed!");
+  }
+}, [fullName, phone, address, city, stateName, pincode, cart, totals, navigate]);
+
 
   // small handlers
   const back = useCallback(() => navigate(-1), [navigate]);
