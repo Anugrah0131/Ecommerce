@@ -119,8 +119,8 @@ export default function Home() {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-full sm:max-w-sm mt-8">
               {[{ icon: Truck, title: "Fast", sub: "Across India" },
-                { icon: ShieldCheck, title: "Secure", sub: "Safe Payments" },
-                { icon: Headphones, title: "Support", sub: "24/7" }].map((item, i) => {
+              { icon: ShieldCheck, title: "Secure", sub: "Safe Payments" },
+              { icon: Headphones, title: "Support", sub: "24/7" }].map((item, i) => {
                 const Icon = item.icon;
                 return (
                   <div key={i} className="flex items-center gap-3">
@@ -283,9 +283,9 @@ export default function Home() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
             {[{ icon: Truck, title: "Fast Delivery", desc: "Get your orders delivered quickly and safely." },
-              { icon: ShieldCheck, title: "Secure Payments", desc: "Encrypted and trusted checkout." },
-              { icon: Star, title: "Premium Quality", desc: "Only top-rated, handpicked items." },
-              { icon: Headphones, title: "24/7 Support", desc: "We are here when you need us." }].map((card, idx) => {
+            { icon: ShieldCheck, title: "Secure Payments", desc: "Encrypted and trusted checkout." },
+            { icon: Star, title: "Premium Quality", desc: "Only top-rated, handpicked items." },
+            { icon: Headphones, title: "24/7 Support", desc: "We are here when you need us." }].map((card, idx) => {
               const Icon = card.icon;
               return (
                 <motion.div

@@ -23,7 +23,7 @@ import Checkout from "./pages/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
 import OrderDetails from "./pages/OrderDetails";
 import OrderTracking from "./pages/OrderTracking";
-
+import AdminOrders from "./admin/AdminOrders";
 
 
 createRoot(document.getElementById("root")).render(
@@ -51,7 +51,8 @@ createRoot(document.getElementById("root")).render(
         <Route path="/order-success" element={<OrderSuccess />} />
         <Route path="/order/:orderId" element={<OrderDetails />} />
         <Route path="/track/:orderId" element={<OrderTracking />} />
-        
+        <Route path="/admin/orders" element={<AdminOrders />} />
+
       
 
 
