@@ -1,8 +1,13 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useUserStore } from "../store/useUserStore";   // ✅ ADDED
 
 export default function Login() {
   const navigate = useNavigate();
+
+  // ✅ Zustand setters
+  const setUser = useUserStore((state) => state.setUser);
+  const setToken = useUserStore((state) => state.setToken);
 
   const [form, setForm] = useState({
     email: "",
@@ -38,12 +43,18 @@ export default function Login() {
         return;
       }
 
+      // ✅ Save to Zustand
+      setUser(data.user);
+      setToken(data.token);
+
+      // (OPTIONAL BACKUP) Still keeping localStorage for your existing logic
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
+
       navigate("/");
     } catch (error) {
       setLoading(false);
-      setError("Something went wrong. Try again.");    
+      setError("Something went wrong. Try again.");
     }
   };
 

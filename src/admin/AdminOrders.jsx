@@ -1,5 +1,3 @@
-// AdminOrders.jsx — FULL PREMIUM UI (Glassmorphic + Drawer + Timeline + Status Editor)
-// Place this file at: src/admin/AdminOrders.jsx
 
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,7 +13,7 @@ import {
   Truck,
   X,
 } from "lucide-react";
-
+import { useUserStore } from "../store/useUserStore";
 // NOTE: this component expects TailwindCSS, framer-motion and lucide-react to be installed.
 // API assumptions (adjust if your backend differs):
 // GET  http://localhost:8080/api/orders          -> returns array of orders
@@ -49,6 +47,13 @@ function StatusBadge({ status }) {
     <span className={`px-3 py-1 rounded-full text-sm font-semibold ${color}`}>{status}</span>
   );
 }
+
+const token = useUserStore((state) => state.token);
+const res = await fetch("http://localhost:8080/api/admin/orders", {
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+});
 
 export default function AdminOrders() {
   const [orders, setOrders] = useState([]);
