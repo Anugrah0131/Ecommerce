@@ -148,9 +148,9 @@ function CategoryTable() {
     <div className="w-full min-h-screen bg-gray-100 py-12 flex flex-col items-center">
       
       {/* PAGE TITLE */}
-      <h1 className="text-4xl font-bold text-gray-800 tracking-tight mb-8">
+       <h1 className="text-4xl font-bold text-gray-800 tracking-tight mb-8">
         Category Management
-      </h1>
+       </h1>
 
       {/* FORM CARD */}
       <motion.form

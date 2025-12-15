@@ -51,7 +51,15 @@ createRoot(document.getElementById("root")).render(
         <Route path="/order-success" element={<OrderSuccess />} />
         <Route path="/order/:orderId" element={<OrderDetails />} />
         <Route path="/track/:orderId" element={<OrderTracking />} />
-        <Route path="/admin/orders" element={<AdminOrders />} />
+        <Route
+  path="/admin/orders"
+  element={
+    <ProtectedRoute>
+      <AdminOrders />
+    </ProtectedRoute>
+  }
+/>
+
 
       
 
