@@ -4,15 +4,6 @@ import { motion } from "framer-motion";
 import { ArrowLeft, MapPin, CreditCard, Truck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-/**
- * Optimized Checkout page
- * - Individual input states for smooth typing
- * - Memoized pricing & cart list
- * - Buttons explicitly type="button" (prevents accidental form submit)
- * - Safe getters for various cart item shapes
- * - Framer-motion animations run once on mount
- */
-
 /* ------- Helpers ------- */
 const safeGet = (obj, ...keys) => {
   for (const k of keys) {
@@ -26,7 +17,6 @@ const fmt = (v = 0) =>
 
 /* ------- Memoized subcomponents ------- */
 const GlassPanel = React.memo(function GlassPanel({ children, mounted, className = "" }) {
-  // animation only depends on `mounted` which flips once on mount
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.98 }}
@@ -44,7 +34,7 @@ const StyledInput = React.memo(function StyledInput({ label, value, onChange, ..
     <div>
       <label className="block text-sm font-medium text-white/80 mb-1">{label}</label>
       <input
-        className="w-full px-4 py-3 rounded-lg bg-white/8 border border-white/20 text-white placeholder-white/60 focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition duration-150"
+        className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/60 focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition duration-150 outline-none"
         placeholder={label}
         value={value}
         onChange={onChange}
@@ -58,10 +48,10 @@ const CartList = React.memo(function CartList({ items, priceFormatter }) {
   return (
     <div className="space-y-3 mb-4 max-h-56 overflow-y-auto pr-2 custom-scrollbar">
       {items.length === 0 ? (
-        <div className="text-white/60 text-sm">Your cart is empty</div>
+        <div className="text-white/60 text-sm text-center py-4">Your cart is empty</div>
       ) : (
-        items.map((it) => {
-          const id = safeGet(it, "_id", "id", "productId") ?? Math.random().toString(36).slice(2, 8);
+        items.map((it, idx) => {
+          const id = safeGet(it, "_id", "id", "productId") ?? `item-${idx}`;
           const title = safeGet(it, "title", "name") ?? "Item";
           const price = Number(safeGet(it, "price", "unitPrice") ?? 0);
           const qty = Number(safeGet(it, "quantity", "qty") ?? 1);
@@ -82,15 +72,11 @@ const CartList = React.memo(function CartList({ items, priceFormatter }) {
 /* ------- Main Component ------- */
 export default function Checkout() {
   const navigate = useNavigate();
-
-  // mounted toggles to true once on client mount so animations run only once
   const [mounted, setMounted] = useState(false);
-
-  // cart and coupon come from localStorage (unchanged structure support)
   const [cart, setCart] = useState([]);
   const [appliedCoupon, setAppliedCoupon] = useState(null);
 
-  // Individual input states to avoid re-rendering whole page on each keystroke
+  // Form states
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
@@ -98,27 +84,22 @@ export default function Checkout() {
   const [stateName, setStateName] = useState("");
   const [pincode, setPincode] = useState("");
 
-  // constants
   const GST_RATE = 0.18;
   const DELIVERY_FEE = 79;
   const FREE_DELIVERY_THRESHOLD = 4000;
 
   useEffect(() => {
-    // only run on client
     setMounted(true);
-
     try {
-      const stored = JSON.parse(localStorage.getItem("cart")) || [];
-      const coupon = JSON.parse(localStorage.getItem("cart_coupon")) || null;
-      setCart(Array.isArray(stored) ? stored : []);
-      setAppliedCoupon(coupon);
+      const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
+      const storedCoupon = JSON.parse(localStorage.getItem("cart_coupon")) || null;
+      setCart(Array.isArray(storedCart) ? storedCart : []);
+      setAppliedCoupon(storedCoupon);
     } catch (err) {
-      console.error("Failed to parse cart from localStorage", err);
-      setCart([]);
+      console.error("Storage error:", err);
     }
   }, []);
 
-  // Memoize price calculations so typing doesn't recalc heavy things
   const totals = useMemo(() => {
     const subtotal = cart.reduce((s, i) => {
       const price = Number(safeGet(i, "price", "unitPrice") ?? 0);
@@ -127,43 +108,64 @@ export default function Checkout() {
     }, 0);
 
     let discount = 0;
-    if (appliedCoupon && typeof appliedCoupon === "object") {
-      if (appliedCoupon.type === "percent") {
-        discount = Math.round((subtotal * (Number(appliedCoupon.amount) || 0)) / 100);
-      } else if (appliedCoupon.type === "fixed") {
-        discount = Number(appliedCoupon.amount) || 0;
-      }
+    if (appliedCoupon?.amount) {
+      discount = appliedCoupon.type === "percent" 
+        ? Math.round((subtotal * Number(appliedCoupon.amount)) / 100) 
+        : Number(appliedCoupon.amount);
     }
 
     const taxable = Math.max(0, subtotal - discount);
     const gst = Math.round(taxable * GST_RATE);
-    const delivery = subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_FEE;
-    const grandTotal = taxable + gst + delivery;
-
-    return { subtotal, discount, gst, delivery, grandTotal };
+    const delivery = (subtotal > 0 && subtotal < FREE_DELIVERY_THRESHOLD) ? DELIVERY_FEE : 0;
+    
+    return { subtotal, discount, gst, delivery, grandTotal: taxable + gst + delivery };
   }, [cart, appliedCoupon]);
+/* ------- Update only this function in your Checkout.jsx ------- */
 
-  // stable callbacks to avoid re-creating on each render
-  const handlePlaceOrder = useCallback(async () => {
-  if (!fullName.trim()) return alert("Please enter Full Name");
-  if (!phone.trim()) return alert("Please enter Phone Number");
-  if (!address.trim()) return alert("Please enter Address");
-  if (!city.trim()) return alert("Please enter City");
-  if (!stateName.trim()) return alert("Please enter State");
-  if (!pincode.toString().trim()) return alert("Please enter Pincode");
+const handlePlaceOrder = useCallback(async () => {
+  // 1. Validation
+  if (!fullName || !phone || !address || !city || !stateName || !pincode) {
+    return alert("Please fill all shipping details");
+  }
 
-  const body = {
-    userId: "guest",
+  // 2. Auth Check - Flexible detection
+  const rawUser = localStorage.getItem("user");
+  console.log("Raw user from storage:", rawUser); // Debug log
+
+  let userData = null;
+  try {
+    userData = JSON.parse(rawUser);
+  } catch (e) {
+    userData = null;
+  }
+
+  // Extract ID (tries _id, then id, then checks if the whole thing is a string)
+  const userId = userData?._id || userData?.id || (typeof userData === 'string' && userData !== "guest" ? userData : null);
+
+  if (!userId || userId === "guest") {
+    console.error("Auth Failed. UserData:", userData);
+    alert("Login session not found. Please log in again to place an order.");
+    return navigate("/login");
+  }
+
+  const orderBody = {
+    userId: userId, // Use the extracted ID
     paymentMethod: "cod",
     amount: totals.grandTotal,
-    shipping: { fullName, phone, address, city, state: stateName, pincode },
-
+    shipping: { 
+      fullName, 
+      phone, 
+      address, 
+      city, 
+      state: stateName, 
+      pincode 
+    },
     items: cart.map((i) => ({
-      productId: i._id || i.productId,
+      productId: i._id || i.productId || i.id,
       title: i.title || i.name,
-      price: i.price,
-      quantity: i.quantity,
-      image: i.image,
+      price: Number(i.price || 0),
+      quantity: Number(i.quantity || 1),
+      image: i.image || "",
     })),
   };
 
@@ -171,59 +173,57 @@ export default function Checkout() {
     const res = await fetch("http://localhost:8080/api/orders", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      body: JSON.stringify(orderBody),
     });
 
-    const saved = await res.json();
+    const data = await res.json();
 
-    // save returned order in localStorage
-    localStorage.setItem("latest_order", JSON.stringify(saved));
+    if (!res.ok) {
+      throw new Error(data.message || "Server refused order");
+    }
+
+    localStorage.setItem("latest_order", JSON.stringify(data));
     localStorage.removeItem("cart");
-
     navigate("/order-success");
   } catch (err) {
     console.error("Order error:", err);
-    alert("Order failed!");
+    alert(`Order failed: ${err.message}`);
   }
 }, [fullName, phone, address, city, stateName, pincode, cart, totals, navigate]);
 
-
-  // small handlers
-  const back = useCallback(() => navigate(-1), [navigate]);
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-indigo-950 to-purple-950 py-10 px-4">
-      <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.36 }} className="max-w-5xl mx-auto text-white">
-        <button onClick={back} type="button" className="flex items-center gap-2 text-white/70 mb-6 hover:text-white transition duration-150 p-2 rounded">
+      <motion.div 
+        initial={{ opacity: 0, y: 18 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        className="max-w-5xl mx-auto text-white"
+      >
+        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-white/70 mb-6 hover:text-white transition p-2">
           <ArrowLeft className="w-5 h-5" />
           <span className="font-semibold">Return to Cart</span>
         </button>
 
-        <h1 className="text-4xl font-extrabold mb-8 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-pink-300 to-indigo-300">
+        <h1 className="text-4xl font-extrabold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-pink-300 to-indigo-300">
           Secure Checkout
         </h1>
 
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* LEFT: Shipping & Payment */}
           <div className="lg:col-span-2 space-y-6">
             <GlassPanel mounted={mounted}>
-              <h2 className="text-2xl font-bold mb-4 flex items-center gap-3 text-pink-300">
+              <h2 className="text-2xl font-bold mb-6 flex items-center gap-3 text-pink-300">
                 <MapPin className="w-6 h-6" /> Shipping Details
               </h2>
-
               <div className="grid md:grid-cols-2 gap-4">
                 <StyledInput label="Full Name" value={fullName} onChange={(e) => setFullName(e.target.value)} />
                 <StyledInput label="Phone Number" value={phone} onChange={(e) => setPhone(e.target.value)} type="tel" />
               </div>
-
               <div className="mt-4">
                 <StyledInput label="Full Address" value={address} onChange={(e) => setAddress(e.target.value)} />
               </div>
-
               <div className="grid md:grid-cols-3 gap-4 mt-4">
                 <StyledInput label="City" value={city} onChange={(e) => setCity(e.target.value)} />
                 <StyledInput label="State" value={stateName} onChange={(e) => setStateName(e.target.value)} />
-                <StyledInput label="Pincode" value={pincode} onChange={(e) => setPincode(e.target.value)} type="text" />
+                <StyledInput label="Pincode" value={pincode} onChange={(e) => setPincode(e.target.value)} />
               </div>
             </GlassPanel>
 
@@ -231,72 +231,48 @@ export default function Checkout() {
               <h2 className="text-2xl font-bold mb-4 flex items-center gap-3 text-pink-300">
                 <CreditCard className="w-6 h-6" /> Payment Method
               </h2>
-
-              <div className="bg-white/8 p-4 rounded-lg border border-white/12 flex items-center justify-between">
-                <p className="text-white/80 font-medium">Currently only Cash on Delivery (COD) is supported.</p>
+              <div className="bg-white/5 p-4 rounded-lg border border-white/10 flex items-center justify-between">
+                <p className="text-white/80">Currently only Cash on Delivery (COD) is supported.</p>
                 <Truck className="w-5 h-5 text-pink-300" />
               </div>
             </GlassPanel>
           </div>
 
-          {/* RIGHT: Summary */}
-          <div>
-            <GlassPanel mounted={mounted}>
-              <h2 className="text-2xl font-bold mb-4 flex items-center gap-3 text-pink-300">
-                <CreditCard className="w-6 h-6" /> Order Summary
-              </h2>
-
+          <aside>
+            <GlassPanel mounted={mounted} className="sticky top-10">
+              <h2 className="text-xl font-bold mb-4 text-pink-300">Order Summary</h2>
               <CartList items={cart} priceFormatter={fmt} />
-
-              <div className="space-y-3 text-white/80 text-base">
+              
+              <div className="space-y-3 mt-6 border-t border-white/10 pt-4 text-white/80">
+                <div className="flex justify-between"><span>Subtotal</span><span>{fmt(totals.subtotal)}</span></div>
+                {totals.discount > 0 && (
+                  <div className="flex justify-between text-green-400"><span>Discount</span><span>-{fmt(totals.discount)}</span></div>
+                )}
+                <div className="flex justify-between"><span>GST (18%)</span><span>{fmt(totals.gst)}</span></div>
                 <div className="flex justify-between">
-                  <span>Subtotal</span>
-                  <span>{fmt(totals.subtotal)}</span>
+                  <span>Delivery</span>
+                  <span>{totals.delivery === 0 ? <span className="text-cyan-400">FREE</span> : fmt(totals.delivery)}</span>
                 </div>
-
-                <div className="flex justify-between text-green-400">
-                  <span>Discount</span>
-                  <span>-{fmt(totals.discount)}</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>GST ({GST_RATE * 100}%)</span>
-                  <span>{fmt(totals.gst)}</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Delivery Fee</span>
-                  <span>{totals.delivery === 0 ? <span className="text-cyan-400">Free</span> : fmt(totals.delivery)}</span>
-                </div>
-
-                <hr className="border-white/20 my-3" />
-
-                <div className="flex justify-between text-xl font-extrabold text-pink-300">
-                  <span>Grand Total</span>
-                  <span>{fmt(totals.grandTotal)}</span>
+                <div className="flex justify-between text-2xl font-bold text-white pt-2 border-t border-white/20">
+                  <span>Total</span><span className="text-pink-300">{fmt(totals.grandTotal)}</span>
                 </div>
               </div>
 
               <button
-                type="button"
                 onClick={handlePlaceOrder}
-                className="w-full mt-5 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white font-extrabold text-lg shadow-lg shadow-pink-500/25 hover:scale-[1.01] transition-transform duration-150"
+                className="w-full mt-6 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-black text-lg shadow-xl hover:brightness-110 active:scale-95 transition-all"
               >
-                Place Order
+                PLACE ORDER
               </button>
             </GlassPanel>
-          </div>
+          </aside>
         </div>
       </motion.div>
 
-      {/* optional tiny scrollbar style */}
-      <style>
-        {`
-          .custom-scrollbar::-webkit-scrollbar { width: 8px; }
-          .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 8px; }
-          .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.14); border-radius: 8px; }
-        `}
-      </style>
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+      `}</style>
     </div>
   );
 }

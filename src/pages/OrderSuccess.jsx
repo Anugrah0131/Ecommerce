@@ -62,8 +62,8 @@ useEffect(() => {
 
         <div className="flex flex-col gap-3">
 <Link
-  to={`/order/${order._id}`}
-  className="w-full py-3 bg-white/20 border border-white/30 rounded-xl text-white font-semibold hover:bg-white/30 transition"
+  to={`/order/${order._id || order.orderId}`} // Fallback to orderId if _id is missing
+  className="..."
 >
   View Order Details
 </Link>
